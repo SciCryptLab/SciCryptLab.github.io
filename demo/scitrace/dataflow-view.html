@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataflow · SciTrace</title>
+    <link rel="icon" type="image/png" href="../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/chrome.css" rel="stylesheet">
+    <link href="../../assets/css/vis.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css" rel="stylesheet">
+    <style>
+      .commit-row { padding: 0.85rem; border-radius: 0.5rem; cursor: pointer; transition: background 0.15s; border-left: 3px solid transparent; }
+      .commit-row:hover, .commit-row.active { background: rgba(255,255,255,0.04); border-left-color: var(--primary-color); }
+      .commit-sha { font-family: var(--bs-font-monospace); color: #fbbf24; font-size: 0.8rem; }
+      .run-record { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px; font-family: var(--bs-font-monospace); font-size: 0.78rem; color: rgba(255,255,255,0.85); white-space: pre-wrap; }
+      .restore-banner { background: rgba(5,150,105,0.12); border: 1px solid rgba(5,150,105,0.35); border-left: 4px solid #34d399; border-radius: 6px; padding: 12px 16px; color: #6ee7b7; font-size: 0.85rem; }
+      .commit-row.restored { border-left-color: #34d399 !important; background: rgba(5,150,105,0.08) !important; }
+      .branch-badge { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px; border-radius: 10px; font-family: var(--bs-font-monospace); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.02em; }
+      .branch-badge.head { background: rgba(5,150,105,0.18); color: #34d399; border: 1px solid rgba(5,150,105,0.4); }
+      .branch-badge.remote { background: rgba(37,99,235,0.18); color: #93c5fd; border: 1px solid rgba(37,99,235,0.4); }
+      @keyframes btn-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .btn .fa-spinner { animation: btn-spin 1s linear infinite; }
+      /* ── Lifecycle pipeline — now in chrome.css ── */
+      /* ── Script view & terminal ── */
+      .script-code-block { background: #272822; padding: 16px; margin: 0; border-radius: 0; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.78rem; line-height: 1.5; overflow: auto; max-height: 60vh; white-space: pre-wrap; word-break: break-word; border: none; }
+      .script-code-block .hljs { padding: 0; background: transparent; }
+      .script-editor { width: 100%; min-height: 50vh; background: #272822; color: #d4d4d4; border: none; padding: 16px; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.78rem; line-height: 1.5; resize: vertical; outline: none; }
+      .terminal-bar { background: #2d2d2d; padding: 6px 12px; display: flex; align-items: center; gap: 6px; border-radius: 0; cursor: default; }
+      .terminal-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .terminal-dot.red { background: #ff5f57; cursor: pointer; }
+      .terminal-dot.amber { background: #febc2e; }
+      .terminal-dot.green { background: #28c840; }
+      .terminal-title { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-left: 8px; }
+      .terminal-output { padding: 12px 16px; font-family: 'Monaco', 'Menlo', 'Consolas', monospace; font-size: 0.73rem; line-height: 1.45; color: #d4d4d4; min-height: 50px; overflow-y: auto; background: #1e1e1e; }
+      .terminal-output .cmd { color: #569cd6; }
+      .terminal-output .out { color: rgba(255,255,255,0.75); }
+      .terminal-output .success { color: #4ec9b0; font-weight: 700; }
+      .terminal-output .rerun { color: #4ec9b0; font-weight: 700; }
+      #terminal-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1060; width: 90%; max-width: 900px; height: 420px; display: none; flex-direction: column; border-radius: 8px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); background: #1e1e1e; border: 1px solid #3c3c3c; }
+      #terminal-popup .terminal-bar { border-bottom: 1px solid #3c3c3c; flex-shrink: 0; }
+      #terminal-popup .terminal-output { flex: 1; overflow-y: auto; min-height: 0; }
+      /* ── File preview table ── */
+      .csv-preview-table { font-size: 0.78rem; margin: 0; }
+      .csv-preview-table thead th { position: sticky; top: 0; z-index: 1; background: #1e293b; border-bottom: 2px solid rgba(255,255,255,0.15); color: #e2e8f0; }
+      .csv-preview-table tbody td { color: #ffffff !important; font-family: var(--bs-font-monospace); }
+      .csv-preview-table tbody tr:hover { background: rgba(37,99,235,0.08); }
+      /* ── Light theme: script view & terminal ── */
+      body.theme-glass.theme-light .script-code-block {
+          background: #f8f9fa;
+          color: #1f2937;
+          border: 1px solid #e5e7eb;
+      }
+      body.theme-glass.theme-light .script-editor {
+          background: #ffffff;
+          color: #1f2937;
+          border: 1px solid #e5e7eb;
+      }
+      body.theme-glass.theme-light .terminal-bar {
+          background: #e5e7eb;
+      }
+      body.theme-glass.theme-light .terminal-title {
+          color: #6b7280;
+      }
+      body.theme-glass.theme-light .terminal-output {
+          background: #f3f4f6;
+          color: #1f2937;
+      }
+      body.theme-glass.theme-light .terminal-output .cmd {
+          color: #0369a1;
+      }
+      body.theme-glass.theme-light .terminal-output .out {
+          color: #374151;
+      }
+      body.theme-glass.theme-light .terminal-output .success,
+      body.theme-glass.theme-light .terminal-output .rerun {
+          color: #059669;
+      }
+      body.theme-glass.theme-light #terminal-popup {
+          background: #ffffff;
+          border-color: #d1d5db;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      }
+      body.theme-glass.theme-light #terminal-popup .terminal-bar {
+          border-bottom-color: #d1d5db;
+      }
+      body.theme-glass.theme-light .csv-preview-table thead th {
+          background: #f3f4f6;
+          border-bottom-color: #d1d5db;
+          color: #1f2937;
+      }
+      body.theme-glass.theme-light .csv-preview-table tbody td {
+          color: #1f2937 !important;
+      }
+      body.theme-glass.theme-light .csv-preview-table tbody tr:hover {
+          background: rgba(37,99,235,0.06);
+      }
+      body.theme-glass.theme-light .run-record {
+          background: rgba(0,0,0,0.05);
+          color: #1f2937;
+      }
+      body.theme-glass.theme-light .restore-banner {
+          background: rgba(5,150,105,0.08);
+          border-color: rgba(5,150,105,0.25);
+          color: #065f46;
+      }
+      body.theme-glass.theme-light .commit-row:hover,
+      body.theme-glass.theme-light .commit-row.active {
+          background: rgba(0,0,0,0.04);
+      }
+      body.theme-glass.theme-light .commit-sha {
+          color: #b45309;
+      }
+      body.theme-glass.theme-light .branch-badge.head {
+          background: rgba(5,150,105,0.12);
+          color: #065f46;
+          border-color: rgba(5,150,105,0.3);
+      }
+      body.theme-glass.theme-light .branch-badge.remote {
+          background: rgba(37,99,235,0.12);
+          color: #1e40af;
+          border-color: rgba(37,99,235,0.3);
+      }
+      /* ── Light theme: highlight.js syntax (GitHub light palette) ── */
+      body.theme-glass.theme-light .script-code-block .hljs {
+          color: #24292e;
+          background: transparent;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-keyword,
+      body.theme-glass.theme-light .script-code-block .hljs-selector-tag,
+      body.theme-glass.theme-light .script-code-block .hljs-literal {
+          color: #d73a49;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-subst {
+          color: #24292e;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-string,
+      body.theme-glass.theme-light .script-code-block .hljs-type,
+      body.theme-glass.theme-light .script-code-block .hljs-symbol,
+      body.theme-glass.theme-light .script-code-block .hljs-bullet,
+      body.theme-glass.theme-light .script-code-block .hljs-addition {
+          color: #032f62;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-comment,
+      body.theme-glass.theme-light .script-code-block .hljs-quote,
+      body.theme-glass.theme-light .script-code-block .hljs-deletion {
+          color: #6a737d;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-number {
+          color: #005cc5;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-built_in,
+      body.theme-glass.theme-light .script-code-block .hljs-builtin-name,
+      body.theme-glass.theme-light .script-code-block .hljs-selector-attr,
+      body.theme-glass.theme-light .script-code-block .hljs-selector-pseudo,
+      body.theme-glass.theme-light .script-code-block .hljs-selector-id,
+      body.theme-glass.theme-light .script-code-block .hljs-title.class_,
+      body.theme-glass.theme-light .script-code-block .hljs-class .hljs-title {
+          color: #6f42c1;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-name {
+          color: #22863a;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-section,
+      body.theme-glass.theme-light .script-code-block .hljs-function .hljs-title,
+      body.theme-glass.theme-light .script-code-block .hljs-attr,
+      body.theme-glass.theme-light .script-code-block .hljs-attribute {
+          color: #6f42c1;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-title {
+          color: #6f42c1;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-params {
+          color: #24292e;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-meta,
+      body.theme-glass.theme-light .script-code-block .hljs-meta-string,
+      body.theme-glass.theme-light .script-code-block .hljs-meta-keyword {
+          color: #6a737d;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-regexp,
+      body.theme-glass.theme-light .script-code-block .hljs-link {
+          color: #032f62;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-tag {
+          color: #22863a;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-emphasis {
+          font-style: italic;
+      }
+      body.theme-glass.theme-light .script-code-block .hljs-strong {
+          font-weight: bold;
+      }
+    </style>
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="scitrace" data-active="dataflows">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+
+    <div class="page-heading">
+        <div class="d-flex align-items-center mb-2">
+            <a href="dataflow-list.html" class="btn btn-sm btn-outline-secondary me-3"><i class="fas fa-arrow-left me-1"></i>Back</a>
+            <span class="badge me-2" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);"><i class="fas fa-code-branch me-1"></i>main</span>
+            <span class="badge" style="background:rgba(5,150,105,0.18);color:#34d399;border:1px solid rgba(5,150,105,0.35);"><i class="fas fa-check-circle me-1"></i>clean</span>
+        </div>
+        <h1>river-water-quality</h1>
+        <p><code>/data/river-water-quality</code> · Water quality analysis</p>
+    </div>
+
+    <ul class="nav nav-tabs mb-3 flex-nowrap" role="tablist" style="overflow-x:auto;flex-wrap:nowrap;">
+        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#repo-tab" type="button"><i class="fas fa-folder-tree me-1"></i>Repo View</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lifecycle-tab" type="button"><i class="fas fa-project-diagram me-1"></i>Data Lifecycle</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#git-tab" type="button"><i class="fas fa-history me-1"></i>Git Log</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit-tab" type="button"><i class="fas fa-pen me-1"></i>Edit Dataflow</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- REPO VIEW -->
+        <div class="tab-pane fade show active" id="repo-tab" role="tabpanel">
+            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;">
+                <i class="fas fa-hand-pointer me-2"></i><div>Tip: click a <strong>script</strong> to view &amp; run it, or click a <strong>data file</strong> (<code>.csv</code>, <code>.json</code>) or <strong>plot</strong> (<code>.png</code>) to preview its contents. Scripts must be run in order: <code>filter_and_clean_samples.py</code> → <code>compute_site_statistics.py</code> → <code>generate_figures.py</code>.</div>
+            </div>
+            <div class="row g-3">
+                <div class="col-lg-9">
+                    <div class="card shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-folder-tree me-2 text-info"></i>Repository graph</h5>
+                            <button class="btn btn-sm btn-outline-secondary" disabled><i class="fas fa-sync me-1"></i>Regenerate</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="repo-graph" style="height: 580px; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;"></div>
+                            <div class="d-flex flex-wrap mt-3" style="gap: 1rem;font-size:0.85rem;">
+                                <span><span style="display:inline-block;width:14px;height:14px;background:#a78bfa;border-radius:3px;vertical-align:middle;"></span> dataset root</span>
+                                <span><span style="display:inline-block;width:14px;height:14px;background:#87CEEB;border-radius:3px;vertical-align:middle;"></span> raw data</span>
+                                <span><span style="display:inline-block;width:14px;height:14px;background:#4CAF50;border-radius:3px;vertical-align:middle;"></span> scripts</span>
+                                <span><span style="display:inline-block;width:14px;height:14px;background:#F9A07A;border-radius:3px;vertical-align:middle;"></span> results</span>
+                                <span><span style="display:inline-block;width:14px;height:14px;background:#DDA0DD;border-radius:3px;vertical-align:middle;"></span> plots</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card shadow-sm mb-3"><div class="card-body">
+                        <span style="display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:rgba(255,255,255,0.55);font-weight:700;margin-bottom:0.75rem;">Workflow metadata</span>
+                        <div class="small mb-2"><div class="text-muted">Workflow type</div><div>Water-quality pipeline</div></div>
+                        <div class="small mb-2"><div class="text-muted">Stages</div><div>4 (raw → clean → analyze → plot)</div></div>
+                        <div class="small mb-2"><div class="text-muted">Connections</div><div>17 directed edges</div></div>
+                        <div class="small"><div class="text-muted">Storage</div><div>Local git-annex</div></div>
+                    </div></div>
+                    <div class="card shadow-sm"><div class="card-body">
+                        <span style="display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:rgba(255,255,255,0.55);font-weight:700;margin-bottom:0.75rem;">Quick stats</span>
+                        <div class="small mb-1">Raw inputs <strong class="float-end">4</strong></div>
+                        <div class="small mb-1">Scripts <strong class="float-end">3</strong></div>
+                        <div class="small mb-1">Results <strong class="float-end">2</strong></div>
+                        <div class="small mb-1">Plots <strong class="float-end">4</strong></div>
+                    </div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIFECYCLE -->
+        <div class="tab-pane fade" id="lifecycle-tab" role="tabpanel">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-project-diagram me-2 text-info"></i>Data lifecycle (AI-derived)</h5>
+                    <button class="btn btn-sm btn-outline-secondary" disabled><i class="fas fa-sync me-1"></i>Regenerate</button>
+                </div>
+                <div class="card-body">
+                    <div id="lifecycle-pipeline" class="pipeline-grid"></div>
+                    <div class="pipeline-detail" id="pipeline-detail">
+                        <div class="d-flex justify-content-between align-items-center mb-2" style="gap:8px;">
+                            <h6 class="mb-0" id="pdetail-title" style="font-size:0.85rem;"></h6>
+                            <button class="btn btn-sm btn-outline-secondary" id="pdetail-close" type="button" style="flex-shrink:0;"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-sm-6"><div class="detail-label">Type</div><div class="detail-val" id="pdetail-type">—</div></div>
+                            <div class="col-sm-6" id="pdetail-script-row"><div class="detail-label">Script</div><div class="detail-val" id="pdetail-script">—</div></div>
+                            <div class="col-sm-6" id="pdetail-risk-row" style="display:none;"><div class="detail-label">Risk</div><div class="detail-val" id="pdetail-risk">—</div></div>
+                            <div class="col-sm-6" id="pdetail-rationale-row" style="display:none;"><div class="detail-label">Rationale</div><div class="detail-val" id="pdetail-rationale">—</div></div>
+                            <div class="col-12" id="pdetail-note-row" style="display:none;"><div class="detail-label">Note</div><div class="detail-val" id="pdetail-note">—</div></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap mt-3" style="gap: 1rem;font-size:0.85rem;">
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#10b981;border-radius:3px;vertical-align:middle;"></span> raw data</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;vertical-align:middle;"></span> processing</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#f59e0b;border-radius:3px;vertical-align:middle;"></span> visualization</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#ef4444;border-radius:3px;vertical-align:middle;"></span> output</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><h6 class="mb-0"><i class="fas fa-flag me-2 text-warning"></i>Manipulations classified</h6></div>
+                <div class="card-body" id="manips"></div>
+            </div>
+        </div>
+
+        <!-- GIT LOG -->
+        <div class="tab-pane fade" id="git-tab" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-history me-2 text-info"></i>Commits</h6>
+                            <div class="d-flex" style="gap:0.5rem;">
+                                <button class="btn btn-sm btn-outline-primary" id="btn-pull"><i class="fas fa-arrow-down me-1"></i>Pull</button>
+                                <button class="btn btn-sm btn-outline-danger" id="btn-push"><i class="fas fa-arrow-up me-1"></i>Push</button>
+                                <button class="btn btn-sm btn-outline-warning" id="btn-restore" disabled><i class="fas fa-undo me-1"></i>Restore</button>
+                            </div>
+                        </div>
+                        <div class="card-body" id="commit-list" style="padding:0.75rem;"></div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><h6 class="mb-0" id="commit-title"><i class="fas fa-info-circle me-2 text-info"></i>Commit details</h6></div>
+                        <div class="card-body" id="commit-detail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDIT -->
+        <div class="tab-pane fade" id="edit-tab" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header"><h5 class="mb-0"><i class="fas fa-pen me-2 text-info"></i>Edit dataflow</h5></div>
+                <div class="card-body">
+                    <form data-demo-redirect="dataflow-view.html" data-demo-msg="Saving…">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label fw-bold">Name</label><input type="text" class="form-control" value="river-water-quality"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold">Dataset path</label><input type="text" class="form-control" value="/data/river-water-quality"></div>
+                            <div class="col-12"><label class="form-label fw-bold">Description</label><textarea class="form-control" rows="3">Synthetic-data dataflow for water quality analysis. Pipeline: raw water samples → clean → analyze → plot.</textarea></div>
+                            <div class="col-md-6"><label class="form-label fw-bold">Git remote</label><input type="text" class="form-control" value="(none — local only)"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold">Git credential</label><select class="form-select"><option>None</option></select></div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3"><button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save changes</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1055">
+  <div id="app-toast" class="toast align-items-center text-bg-secondary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="app-toast-msg"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/vis.min.js"></script>
+    <script src="../../assets/js/chrome.js"></script>
+    <script src="../../assets/js/demo-data.js"></script>
+    <script src="../../assets/js/demo-router.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const d = window.DEMO;
+
+  // Repo view graph — physics-based barnesHut layout, matches real SciTrace
+  // Start with only root, raw data and scripts visible; results & plots revealed on script run
+  const groupColor = { root: '#a78bfa', raw: '#87CEEB', scripts: '#4CAF50', results: '#F9A07A', plots: '#DDA0DD' };
+  function nodeColor(group) {
+    return {
+      background: groupColor[group],
+      border: groupColor[group] === '#a78bfa' ? '#7c3aed' : groupColor[group] === '#87CEEB' ? '#5BA3CC' : groupColor[group] === '#4CAF50' ? '#2c5530' : groupColor[group] === '#F9A07A' ? '#C0603A' : '#A060A0'
+    };
+  }
+  const initialGroups = new Set(['root', 'raw', 'scripts']);
+  const initialVisible = d.repoNodes.filter(function (n) { return initialGroups.has(n.group); });
+  const initialIds = new Set(initialVisible.map(function (n) { return n.id; }));
+  const repoNodes = new vis.DataSet(initialVisible.map(function (n) { return { id: n.id, label: n.label, color: nodeColor(n.group) }; }));
+  const repoEdges = new vis.DataSet(d.repoEdges.filter(function (e) { return initialIds.has(e.from) && initialIds.has(e.to); }).map(function (e) { return { from: e.from, to: e.to }; }));
+  const repoNet = new vis.Network(document.getElementById("repo-graph"), { nodes: repoNodes, edges: repoEdges }, {
+    nodes: {
+      shape: 'box',
+      size: 25,
+      font: { size: 11, color: '#ffffff', bold: { size: 12, color: '#ffffff', mod: 'bold' } },
+      borderWidth: 2,
+      shadow: true,
+      widthConstraint: { minimum: 80 },
+      heightConstraint: { minimum: 40 },
+    },
+    edges: {
+      width: 1,
+      shadow: false,
+      smooth: { type: 'cubicBezier', forceDirection: 'none' },
+      color: { color: '#888', highlight: '#fff', hover: '#fff' },
+    },
+    physics: {
+      stabilization: false,
+      barnesHut: { gravitationalConstant: -8000, springConstant: 0.005, springLength: 60, damping: 0.2 },
+    },
+    layout: { hierarchical: { enabled: false } },
+    interaction: { hover: true, dragNodes: true },
+  });
+
+  // ── Script execution state ────────────────────────────────────────
+  const ranOnce = { scr_proc: false, scr_fit: false, scr_plot: false };
+  const scriptDeps = {
+    scr_proc: [],
+    scr_fit:  ['scr_proc'],
+    scr_plot: ['scr_proc', 'scr_fit'],
+  };
+  const scriptNames = { scr_proc: "filter_and_clean_samples.py", scr_fit: "compute_site_statistics.py", scr_plot: "generate_figures.py" };
+  function depsMet(scriptId) {
+    var deps = scriptDeps[scriptId];
+    if (!deps) return true;
+    return deps.every(function (d) { return ranOnce[d]; });
+  }
+  function missingDeps(scriptId) {
+    var deps = scriptDeps[scriptId];
+    if (!deps) return [];
+    return deps.filter(function (d) { return !ranOnce[d]; }).map(function (d) { return scriptNames[d]; });
+  }
+  const scriptGraphAdditions = {
+    scr_proc: {
+      nodes: [{ id: "results", label: "results/", group: "results" }, { id: "res_t", label: "samples_cleaned.csv", group: "results" }],
+      edges: [{ from: "root", to: "results" }, { from: "results", to: "res_t" }],
+    },
+    scr_fit: {
+      nodes: [{ id: "res_fit", label: "site_statistics.json", group: "results" }],
+      edges: [{ from: "results", to: "res_fit" }],
+    },
+    scr_plot: {
+      nodes: [{ id: "plots", label: "plots/", group: "plots" }, { id: "plot_fig1", label: "pH_by_site.png", group: "plots" }, { id: "plot_fig2", label: "contaminant_by_site.png", group: "plots" }, { id: "plot_fig3", label: "contaminant_vs_temperature.png", group: "plots" }, { id: "plot_fig4", label: "results_summary.png", group: "plots" }],
+      edges: [{ from: "root", to: "plots" }, { from: "plots", to: "plot_fig1" }, { from: "plots", to: "plot_fig2" }, { from: "plots", to: "plot_fig3" }, { from: "plots", to: "plot_fig4" }],
+    },
+  };
+  function fmtNow() {
+    var d2 = new Date();
+    return d2.getFullYear() + "-" + String(d2.getMonth() + 1).padStart(2, "0") + "-" + String(d2.getDate()).padStart(2, "0") + " " + String(d2.getHours()).padStart(2, "0") + ":" + String(d2.getMinutes()).padStart(2, "0");
+  }
+  function createScriptCommit(scriptId) {
+    var tmpl = d.scriptCommits[scriptId];
+    if (!tmpl) return null;
+    var now = fmtNow();
+    var commit = JSON.parse(JSON.stringify(tmpl));
+    commit.date = now;
+    if (commit.run_record) {
+      commit.run_record.start_time = now.replace("T"," ") + ":00Z";
+      commit.run_record.end_time = now.replace("T"," ") + ":00Z";
+    }
+    return commit;
+  }
+
+  // ── Interactive: click a script node to open script view ─────────
+  const scriptMeta = {
+    scr_proc: { cmd: "python scripts/filter_and_clean_samples.py", inputs: ["raw_data/site_A_upstream.csv", "raw_data/site_B_midstream.csv", "raw_data/site_C_downstream.csv", "raw_data/analysis_parameters.json"], outputs: ["results/samples_cleaned.csv"], commit: "9b8e002" },
+    scr_fit: { cmd: "python scripts/compute_site_statistics.py", inputs: ["results/samples_cleaned.csv"], outputs: ["results/site_statistics.json"], commit: "4e2a917" },
+    scr_plot: { cmd: "python scripts/generate_figures.py", inputs: ["results/samples_cleaned.csv", "results/site_statistics.json"], outputs: ["plots/pH_by_site.png", "plots/contaminant_by_site.png", "plots/contaminant_vs_temperature.png", "plots/results_summary.png"], commit: "7d11b9e" },
+  };
+  const scriptContents = {
+    scr_proc: '"""Filter and clean raw water quality samples."""\nimport pandas as pd\nimport numpy as np\nimport json\n\n# Load settings\nwith open("raw_data/analysis_parameters.json") as f:\n    settings = json.load(f)\n\n# Read all sample files\nsamples = []\nfiles = ["raw_data/site_A_upstream.csv", "raw_data/site_B_midstream.csv", "raw_data/site_C_downstream.csv"]\nfor f in files:\n    df = pd.read_csv(f)\n    samples.append(df)\n\ndf = pd.concat(samples, ignore_index=True)\n\n# Detect and handle outliers\nfor col in settings.get("numeric_columns", []):\n    q1 = df[col].quantile(0.25)\n    q3 = df[col].quantile(0.75)\n    iqr = q3 - q1\n    lower = q1 - 1.5 * iqr\n    upper = q3 + 1.5 * iqr\n    df = df[(df[col] >= lower) & (df[col] <= upper)]\n\n# Apply range filters\nfor col, (lo, hi) in settings.get("range_filters", {}).items():\n    df = df[(df[col] >= lo) & (df[col] <= hi)]\n\n# Save cleaned data\ndf.to_csv("results/samples_cleaned.csv", index=False)\nprint(f"Cleaned data saved: {len(df)} rows, {len(df.columns)} columns")\n',
+    scr_fit: '"""Compute site statistics from cleaned samples."""\nimport pandas as pd\nimport numpy as np\nimport json\n\n# Read cleaned data\ndf = pd.read_csv("results/samples_cleaned.csv")\n\nstats = {}\n\n# Compute statistics for each numeric column\nfor col in df.select_dtypes(include=[np.number]).columns:\n    stats[col] = {\n        "mean": round(float(df[col].mean()), 4),\n        "std": round(float(df[col].std()), 4),\n        "min": round(float(df[col].min()), 4),\n        "max": round(float(df[col].max()), 4),\n        "median": round(float(df[col].median()), 4),\n    }\n\n# Group by site if available\nif "site" in df.columns:\n    stats["by_site"] = {}\n    for site, group in df.groupby("site"):\n        s = {}\n        for col in group.select_dtypes(include=[np.number]).columns:\n            s[col] = round(float(group[col].mean()), 4)\n        stats["by_site"][site] = s\n\n# Compute correlation matrix\ncorr = df.select_dtypes(include=[np.number]).corr()\nstats["correlation"] = corr.round(4).to_dict()\n\n# Save results\nwith open("results/site_statistics.json", "w") as f:\n    json.dump(stats, f, indent=2)\n\nprint(f"Analysis complete: {len(stats)} variables")\n',
+    scr_plot: '"""Generate figures from analysis results."""\nimport pandas as pd\nimport numpy as np\nimport json\nimport matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\n\n# Load data\ndf = pd.read_csv("results/samples_cleaned.csv")\nwith open("results/site_statistics.json") as f:\n    stats = json.load(f)\n\nnumeric_cols = df.select_dtypes(include=[np.number]).columns\n\n# Figure 1: Distribution of numeric variables\nfig, axes = plt.subplots(2, 2, figsize=(10, 8))\nfor ax, col in zip(axes.flat, numeric_cols[:4]):\n    ax.hist(df[col].dropna(), bins=30, color="steelblue", edgecolor="white")\n    ax.set_title(col)\n    ax.set_xlabel("Value")\n    ax.set_ylabel("Frequency")\nplt.tight_layout()\nplt.savefig("plots/pH_by_site.png", dpi=150)\n\n# Figure 2: Box plots by site\nfig, ax = plt.subplots(figsize=(10, 6))\ndata = [group[col].dropna().values for _, group in df.groupby("site")]\nax.boxplot(data, labels=df["site"].unique())\nax.set_ylabel(numeric_cols[0])\nplt.tight_layout()\nplt.savefig("plots/contaminant_by_site.png", dpi=150)\n\n# Figure 3: Scatter plot\nplt.figure(figsize=(8, 6))\nif len(numeric_cols) >= 2:\n    plt.scatter(df[numeric_cols[0]], df[numeric_cols[1]], alpha=0.6)\n    plt.xlabel(numeric_cols[0])\n    plt.ylabel(numeric_cols[1])\nplt.tight_layout()\nplt.savefig("plots/contaminant_vs_temperature.png", dpi=150)\n\n# Figure 4: Bar chart of means\nplt.figure(figsize=(8, 6))\ncols = list(numeric_cols)[:4]\nmeans = [stats[c]["mean"] for c in cols if c in stats]\ncolors = ["#2563eb", "#10b981", "#f59e0b", "#ef4444"][:len(means)]\nbars = plt.bar(cols[:len(means)], means, color=colors)\nfor bar, m in zip(bars, means):\n    plt.text(bar.get_x() + bar.get_width()/2., bar.get_height(),\n             f"{m:.2f}", ha="center", va="bottom")\nplt.tight_layout()\nplt.savefig("plots/results_summary.png", dpi=150)\n\nprint("All figures generated successfully.")\n',
+  };
+  const scriptModalEl = document.getElementById("scriptModal");
+  const scriptModal = new bootstrap.Modal(scriptModalEl);
+  const termPopup = document.getElementById("terminal-popup");
+  const scriptTitle = document.getElementById("script-modal-title");
+  const scriptCodeView = document.getElementById("script-code-view");
+  const scriptCodeContent = document.getElementById("script-code-content");
+  const scriptEditorView = document.getElementById("script-editor-view");
+  const scriptEditorTextarea = document.getElementById("script-editor-textarea");
+  const scriptTermOut = document.getElementById("script-terminal-output");
+  const scriptEditBtn = document.getElementById("script-edit-btn");
+  const depHintEl = document.getElementById("script-dep-hint");
+  const depHintText = document.getElementById("script-dep-text");
+  const reduceMo = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let currentMeta = null;
+  let currentScriptId = null;
+  let isEditing = false;
+  let runTimer = null;
+
+  function updateDepHint(scriptId) {
+    var missing = missingDeps(scriptId);
+    if (missing.length > 0) {
+      depHintText.textContent = "Prerequisites: run " + missing.join(", ") + " first.";
+      depHintEl.style.display = "";
+    } else {
+      depHintEl.style.display = "none";
+    }
+  }
+
+  function updateRunButton() {
+    var runBtn = document.getElementById("script-run-btn");
+    if (!currentScriptId) return;
+    if (ranOnce[currentScriptId]) {
+      runBtn.innerHTML = '<i class="fas fa-redo me-1"></i>Rerun';
+      runBtn.className = "btn btn-sm btn-outline-success";
+      runBtn.disabled = false;
+      runBtn.title = "";
+    } else if (!depsMet(currentScriptId)) {
+      runBtn.innerHTML = '<i class="fas fa-lock me-1"></i>Run';
+      runBtn.className = "btn btn-sm btn-outline-secondary";
+      runBtn.disabled = true;
+      runBtn.title = "Prerequisites: run " + missingDeps(currentScriptId).join(", ") + " first.";
+    } else {
+      runBtn.innerHTML = '<i class="fas fa-play me-1"></i>Run';
+      runBtn.className = "btn btn-sm btn-outline-primary";
+      runBtn.disabled = false;
+      runBtn.title = "";
+    }
+  }
+
+  function showScriptView(meta, scriptId) {
+    if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+    currentMeta = meta;
+    currentScriptId = scriptId;
+    isEditing = false;
+    updateDepHint(scriptId);
+    updateRunButton();
+    scriptEditBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+    scriptEditBtn.className = "btn btn-sm btn-outline-warning";
+    scriptCodeView.style.display = "";
+    scriptEditorView.style.display = "none";
+    termPopup.style.display = "none";
+    scriptTermOut.innerHTML = "";
+
+    var fname = meta.cmd.split("/").pop();
+    scriptTitle.textContent = fname;
+    scriptCodeContent.innerHTML = hljs.highlight(scriptContents[scriptId], { language: 'python' }).value;
+    scriptModal.show();
+  }
+
+  scriptEditBtn.addEventListener("click", function () {
+    if (!currentMeta) return;
+    isEditing = !isEditing;
+    if (isEditing) {
+      scriptEditorTextarea.value = scriptCodeContent.textContent;
+      scriptCodeView.style.display = "none";
+      scriptEditorView.style.display = "";
+      scriptEditBtn.innerHTML = '<i class="fas fa-eye me-1"></i>View';
+      scriptEditBtn.className = "btn btn-sm btn-outline-info";
+    } else {
+      scriptCodeContent.innerHTML = hljs.highlight(scriptEditorTextarea.value, { language: 'python' }).value;
+      scriptEditorView.style.display = "none";
+      scriptCodeView.style.display = "";
+      scriptEditBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+      scriptEditBtn.className = "btn btn-sm btn-outline-warning";
+    }
+  });
+
+  function runScript(meta, scriptId, isRerun) {
+    if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+    if (isEditing) {
+      scriptCodeContent.innerHTML = hljs.highlight(scriptEditorTextarea.value, { language: 'python' }).value;
+      scriptEditorView.style.display = "none";
+      scriptCodeView.style.display = "";
+      isEditing = false;
+      scriptEditBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+      scriptEditBtn.className = "btn btn-sm btn-outline-warning";
+    }
+    termPopup.style.display = "flex";
+    scriptTermOut.innerHTML = "";
+    var lines = meta.inputs.map(function (i) { return "Reading " + i + " …"; }).concat(meta.outputs.map(function (o) { return "Writing " + o + " …"; }));
+    var cmdHtml = '<div class="cmd">SciTrace Run "' + meta.cmd + '"</div>';
+    var okHtml = '<div class="success" style="margin-top:6px;">\u2713 exit 0 \u00b7 created ' + meta.outputs.join(", ") + ' \u00b7 new commit ' + meta.commit + ' [SciTrace:Run]</div>';
+    var rerunHtml = '<div class="rerun" style="margin-top:6px;">\u21bb Re-executed \u2014 outputs identical, no new commit.</div>';
+
+    // First run: reveal graph nodes, create commit, update state
+    if (!isRerun && !ranOnce[scriptId]) {
+      ranOnce[scriptId] = true;
+      updateDepHint(scriptId);
+      updateRunButton();
+      var additions = scriptGraphAdditions[scriptId];
+      if (additions) {
+        additions.nodes.forEach(function (n) {
+          if (repoNodes.get(n.id)) return;
+          repoNodes.add({ id: n.id, label: n.label, color: nodeColor(n.group) });
+        });
+        additions.edges.forEach(function (e) {
+          var exists = repoEdges.get().some(function (edge) { return edge.from === e.from && edge.to === e.to; });
+          if (exists) return;
+          repoEdges.add({ from: e.from, to: e.to });
+        });
+      }
+      var commit = createScriptCommit(scriptId);
+      if (commit) {
+        d.commits.unshift(commit);
+        headSha = commit.sha;
+        renderCommitList();
+        showCommit(commit.sha);
+      }
+    }
+
+    if (isRerun || reduceMo) {
+      scriptTermOut.innerHTML = cmdHtml + lines.map(function (l) { return '<div class="out">' + l + '</div>'; }).join("");
+      scriptTermOut.insertAdjacentHTML("beforeend", isRerun ? rerunHtml : okHtml);
+      scriptTermOut.scrollTop = scriptTermOut.scrollHeight;
+      return;
+    }
+    scriptTermOut.innerHTML = cmdHtml;
+    var i = 0;
+    (function next() {
+      if (i < lines.length) {
+        scriptTermOut.insertAdjacentHTML("beforeend", '<div class="out">' + lines[i] + '</div>');
+        scriptTermOut.scrollTop = scriptTermOut.scrollHeight;
+        i++; runTimer = setTimeout(next, 400);
+      } else {
+        scriptTermOut.insertAdjacentHTML("beforeend", okHtml);
+        scriptTermOut.scrollTop = scriptTermOut.scrollHeight;
+      }
+    })();
+  }
+
+  document.getElementById("script-run-btn").addEventListener("click", function () {
+    if (!currentMeta || !currentScriptId) return;
+    if (!ranOnce[currentScriptId] && !depsMet(currentScriptId)) return;
+    runScript(currentMeta, currentScriptId, ranOnce[currentScriptId]);
+  });
+
+  // Terminal popup close (red dot)
+  document.getElementById("term-close").addEventListener("click", function () {
+    termPopup.style.display = "none";
+    if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+  });
+
+  // When modal is closed via X or backdrop, clean up
+  scriptModalEl.addEventListener("hidden.bs.modal", function () {
+    if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+    termPopup.style.display = "none";
+    currentMeta = null;
+    currentScriptId = null;
+    isEditing = false;
+  });
+
+  repoNet.on("click", function (params) {
+    if (!params.nodes.length) return;
+    var id = params.nodes[0];
+    if (scriptMeta[id]) {
+      if (currentMeta === scriptMeta[id] && scriptModalEl.classList.contains("show") && termPopup.style.display === "none") {
+        if (!ranOnce[id] && !depsMet(id)) return;
+        runScript(currentMeta, id, ranOnce[id]);
+      } else if (currentMeta === scriptMeta[id] && scriptModalEl.classList.contains("show")) {
+        runScript(currentMeta, id, true);
+      } else {
+        showScriptView(scriptMeta[id], id);
+      }
+    } else {
+      var fileNode = d.repoNodes.find(function (n) { return n.id === id; });
+      if (fileNode) {
+        var label = fileNode.label || "";
+        var ext = label.split(".").pop().toLowerCase();
+        if (["csv", "json", "png"].indexOf(ext) >= 0) {
+          previewFile(label, ext);
+        }
+      }
+    }
+  });
+
+  // ── File Preview ──────────────────────────────────────────────────
+  const filePreviewModalEl = document.getElementById("filePreviewModal");
+  const filePreviewModal = new bootstrap.Modal(filePreviewModalEl);
+  const filePreviewTitle = document.getElementById("file-preview-title");
+  const filePreviewBody = document.getElementById("file-preview-body");
+
+  function csvToTable(csvText) {
+    var lines = csvText.trim().split("\n");
+    var rows = lines.map(function (l) {
+      var cols = [];
+      var current = "", inQuotes = false;
+      for (var i = 0; i < l.length; i++) {
+        var ch = l[i];
+        if (ch === '"') { inQuotes = !inQuotes; }
+        else if (ch === "," && !inQuotes) { cols.push(current.trim()); current = ""; }
+        else { current += ch; }
+      }
+      cols.push(current.trim());
+      return cols;
+    });
+    var hasHeader = rows.length > 0 && /[a-zA-Z]/.test(rows[0].join(""));
+    var header = hasHeader ? rows[0] : rows[0].map(function (_, i) { return "Col " + (i + 1); });
+    var body = hasHeader ? rows.slice(1) : rows;
+    var html = '<div class="table-responsive w-100" style="max-height:65vh;">';
+    html += '<table class="table table-sm table-striped table-hover border mb-0 csv-preview-table">';
+    html += '<thead class="table-dark"><tr>';
+    header.forEach(function (h) { html += '<th class="text-nowrap">' + escapeHtml(h) + '</th>'; });
+    html += '</tr></thead><tbody>';
+    body.forEach(function (r) {
+      html += '<tr>';
+      r.forEach(function (c) { html += '<td class="text-nowrap">' + escapeHtml(c) + '</td>'; });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function svgBarChart(title, siteLabels, values, colors, yLabel) {
+    var w = 600, h = 340, pad = { top: 40, right: 30, bottom: 60, left: 70 };
+    var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+    var maxV = Math.max.apply(null, values);
+    var barW = Math.min(80, cw / values.length - 20);
+    var gap = (cw - barW * values.length) / (values.length + 1);
+    var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">';
+    svg += '<rect width="' + w + '" height="' + h + '" fill="#1a1a2e" rx="8"/>';
+    svg += '<text x="' + (w/2) + '" y="24" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">' + escapeHtml(title) + '</text>';
+    // Y axis
+    svg += '<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (pad.top+ch) + '" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>';
+    for (var t = 0; t <= 4; t++) {
+      var y = pad.top + ch - (ch * t / 4);
+      var v = (maxV * t / 4).toFixed(1);
+      svg += '<line x1="' + (pad.left-5) + '" y1="' + y + '" x2="' + pad.left + '" y2="' + y + '" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>';
+      svg += '<text x="' + (pad.left-10) + '" y="' + (y+4) + '" text-anchor="end" fill="rgba(255,255,255,0.5)" font-size="10">' + v + '</text>';
+    }
+    svg += '<text x="' + (pad.left-10) + '" y="' + (pad.top-8) + '" text-anchor="end" fill="rgba(255,255,255,0.5)" font-size="9">' + (yLabel||"") + '</text>';
+    // Bars
+    values.forEach(function (v, i) {
+      var barH = (v / maxV) * ch;
+      var bx = pad.left + gap + i * (barW + gap);
+      var by = pad.top + ch - barH;
+      svg += '<rect x="' + bx + '" y="' + by + '" width="' + barW + '" height="' + barH + '" fill="' + colors[i] + '" rx="3" opacity="0.85"/>';
+      svg += '<text x="' + (bx+barW/2) + '" y="' + (by-6) + '" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-weight="600">' + v.toFixed(1) + '</text>';
+      svg += '<text x="' + (bx+barW/2) + '" y="' + (pad.top+ch+18) + '" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">' + escapeHtml(siteLabels[i]) + '</text>';
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  function svgScatter(title, xLabel, yLabel, points) {
+    var w = 560, h = 340, pad = { top: 40, right: 20, bottom: 60, left: 60 };
+    var cw = w - pad.left - pad.right, ch = h - pad.top - pad.bottom;
+    var xs = points.map(function(p){return p[0];}), ys = points.map(function(p){return p[1];});
+    var xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
+    var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+    var xR = xMax - xMin || 1, yR = yMax - yMin || 1;
+    var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">';
+    svg += '<rect width="' + w + '" height="' + h + '" fill="#1a1a2e" rx="8"/>';
+    svg += '<text x="' + (w/2) + '" y="24" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">' + escapeHtml(title) + '</text>';
+    // Grid
+    for (var t = 0; t <= 4; t++) {
+      var x = pad.left + cw * t / 4, y = pad.top + ch - ch * t / 4;
+      svg += '<line x1="' + x + '" y1="' + pad.top + '" x2="' + x + '" y2="' + (pad.top+ch) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+      svg += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left+cw) + '" y2="' + y + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+    }
+    // Axes
+    svg += '<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (pad.top+ch) + '" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
+    svg += '<line x1="' + pad.left + '" y1="' + (pad.top+ch) + '" x2="' + (pad.left+cw) + '" y2="' + (pad.top+ch) + '" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>';
+    // Labels
+    svg += '<text x="' + (pad.left-10) + '" y="' + (pad.top-8) + '" text-anchor="end" fill="rgba(255,255,255,0.5)" font-size="9">' + escapeHtml(yLabel) + '</text>';
+    svg += '<text x="' + (pad.left+cw) + '" y="' + (pad.top+ch+20) + '" text-anchor="end" fill="rgba(255,255,255,0.5)" font-size="9">' + escapeHtml(xLabel) + '</text>';
+    // Points
+    points.forEach(function(p){
+      var cx = pad.left + (p[0]-xMin)/xR * cw;
+      var cy = pad.top + ch - (p[1]-yMin)/yR * ch;
+      svg += '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#60a5fa" opacity="0.75" stroke="#93c5fd" stroke-width="1"/>';
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  function previewFile(fileName, ext) {
+    var icon = ext === "csv" ? "fa-file-csv" : ext === "json" ? "fa-file-code" : "fa-file-image";
+    filePreviewTitle.innerHTML = '<i class="fas ' + icon + ' me-2 text-info"></i>' + fileName;
+    filePreviewBody.classList.add("d-flex", "align-items-center", "justify-content-center");
+    filePreviewBody.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2">Loading preview...</p></div>';
+    filePreviewModal.show();
+
+    setTimeout(function () {
+      if (ext === "csv") {
+        var content = d.fileContents[fileName];
+        if (content) {
+          filePreviewBody.classList.remove("d-flex", "align-items-center", "justify-content-center");
+          filePreviewBody.innerHTML = csvToTable(content);
+        } else {
+          filePreviewBody.innerHTML = '<div class="text-muted py-4">No preview data available for this file.</div>';
+        }
+      } else if (ext === "json") {
+        var jsonContent = d.fileContents[fileName];
+        if (jsonContent) {
+          filePreviewBody.classList.remove("d-flex", "align-items-center", "justify-content-center");
+          filePreviewBody.innerHTML = '<pre style="font-family:Monaco,Menlo,monospace;font-size:0.78rem;color:#cbd5e1;white-space:pre-wrap;max-height:65vh;overflow:auto;margin:0;">' + escapeHtml(jsonContent) + '</pre>';
+        } else {
+          filePreviewBody.innerHTML = '<div class="text-muted py-4">No preview data available for this file.</div>';
+        }
+      } else if (ext === "png") {
+        filePreviewBody.classList.remove("d-flex", "align-items-center", "justify-content-center");
+        var svg = "";
+        if (fileName === "pH_by_site.png") {
+          svg = svgBarChart("pH by sampling site", ["Upstream","Midstream","Downstream"], [7.16, 6.82, 6.48], ["#34d399","#fbbf24","#f87171"], "pH");
+        } else if (fileName === "contaminant_by_site.png") {
+          svg = svgBarChart("Contaminant concentration by site", ["Upstream","Midstream","Downstream"], [0.82, 2.40, 3.90], ["#34d399","#fbbf24","#f87171"], "\u00b5g/L");
+        } else if (fileName === "contaminant_vs_temperature.png") {
+          svg = svgScatter("Contaminant vs. water temperature", "Temperature (\u00b0C)", "Contaminant (\u00b5g/L)", [[14.3,0.8],[14.8,1.1],[13.9,0.6],[14.5,0.9],[14.1,0.7],[15.6,2.4],[15.2,2.1],[16.0,2.7],[15.4,2.3],[15.8,2.5],[16.8,3.8],[17.2,4.1],[16.4,3.5],[17.0,3.9],[17.5,4.2]]);
+        } else if (fileName === "results_summary.png") {
+          svg = svgBarChart("Results summary — mean values by site", ["pH","Turbidity","Contaminant","Temp.\n(\u00b0C)"], [6.81, 18.97, 2.53, 15.53], ["#60a5fa","#fbbf24","#f87171","#34d399"], "");
+        } else if (fileName === "PCA.png") {
+          svg = svgScatter("PCA — first two principal components", "PC1", "PC2", [[-2.1,1.2],[-1.8,0.9],[-2.3,1.4],[-1.9,0.7],[-2.0,1.1],[0.2,-1.1],[0.5,-0.8],[0.1,-1.3],[0.3,-0.9],[0.4,-1.0],[1.8,0.3],[2.1,0.6],[1.6,0.1],[2.0,0.5],[2.2,0.8]]);
+        }
+        filePreviewBody.innerHTML = svg || '<div class="text-muted py-4">No preview available for this plot.</div>';
+      }
+    }, 250);
+  }
+
+  // ── Lifecycle pipeline ────────────────────────────────────────────
+  const pipelineEl = document.getElementById("lifecycle-pipeline");
+  const detailEl = document.getElementById("pipeline-detail");
+  const lifeNodesMap = {};
+  d.lifecycleNodes.forEach(function (n) { lifeNodesMap[n.id] = n; });
+
+  var columns = [
+    { header: "Raw Inputs",       icon: "fa-database", headerBg: "#065f46", headerClass: "header-raw-data",       nodeIds: ["ls1","ls2","ls3"] },
+    { header: "filter_and_clean_samples.py",    icon: "fa-code",     headerBg: "#1e3a5f", headerClass: "header-processing",     nodeIds: ["lclean_read","lclean_outlier","lclean_drop","lclean_filter","lclean_out"] },
+    { header: "compute_site_statistics.py",  icon: "fa-code",     headerBg: "#1e3a5f", headerClass: "header-processing",     nodeIds: ["lanalyze_read","lanalyze_stats","lanalyze_out"] },
+    { header: "generate_figures.py",  icon: "fa-code",     headerBg: "#5f3b00", headerClass: "header-visualization",  nodeIds: ["lplot_read","lplot_gen","lplot_fig1","lplot_fig2","lplot_fig3","lplot_fig4"] },
+  ];
+  var figIds = { "lplot_fig1":1, "lplot_fig2":1, "lplot_fig3":1, "lplot_fig4":1 };
+
+  function showDetail(node) {
+    document.getElementById("pdetail-title").innerHTML = node.label;
+    document.getElementById("pdetail-type").textContent = node.type.replace("_"," ");
+    var scriptRow = document.getElementById("pdetail-script-row");
+    document.getElementById("pdetail-script").textContent = node.script || "—";
+    scriptRow.style.display = node.script ? "" : "none";
+
+    var riskRow = document.getElementById("pdetail-risk-row");
+    var rationaleRow = document.getElementById("pdetail-rationale-row");
+    var noteRow = document.getElementById("pdetail-note-row");
+    if (node.risk) {
+      riskRow.style.display = "";
+      var rc = node.risk === "critical" ? "#dc2626" : "#f59e0b";
+      document.getElementById("pdetail-risk").innerHTML = '<span class="detail-badge" style="background:' + rc + '22;color:' + rc + ';border:1px solid ' + rc + ';">' + node.risk + '</span>';
+      rationaleRow.style.display = "";
+      document.getElementById("pdetail-rationale").textContent = node.rationale || "—";
+      noteRow.style.display = node.note ? "" : "none";
+      document.getElementById("pdetail-note").textContent = node.note || "";
+    } else {
+      riskRow.style.display = "none";
+      rationaleRow.style.display = "none";
+      noteRow.style.display = "none";
+    }
+    detailEl.classList.add("visible");
+  }
+
+  function buildPipeline() {
+    var html = "";
+    columns.forEach(function (col, ci) {
+      html += '<div class="pipeline-col">';
+      html += '<div class="pipeline-header ' + col.headerClass + '" style="background:' + col.headerBg + ';"><i class="fas ' + col.icon + ' me-1"></i>' + col.header + '</div>';
+      html += '<div class="pipeline-body">';
+
+      var figs = [];
+      var prevWasNode = false;
+      for (var i = 0; i < col.nodeIds.length; i++) {
+        var nid = col.nodeIds[i];
+        var node = lifeNodesMap[nid];
+        if (!node) continue;
+
+        if (figIds[nid]) {
+          figs.push(nid);
+          continue;
+        }
+        if (prevWasNode) html += '<div class="pipeline-node-arrow"></div>';
+        var riskClass = node.risk ? " risk-" + node.risk : "";
+        html += '<div class="pipeline-node type-' + node.type + riskClass + '" data-id="' + node.id + '">' + node.label + '</div>';
+        prevWasNode = true;
+      }
+      if (figs.length > 0) {
+        if (prevWasNode) html += '<div class="pipeline-node-arrow"></div>';
+        html += '<div class="pipeline-fig-grid">';
+        figs.forEach(function (fid) {
+          var fn = lifeNodesMap[fid];
+          if (fn) html += '<div class="pipeline-node type-output" data-id="' + fn.id + '">' + fn.label + '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div></div>';
+      if (ci < columns.length - 1) html += '<div class="pipeline-arrow"></div>';
+    });
+    pipelineEl.innerHTML = html;
+
+    pipelineEl.querySelectorAll(".pipeline-node").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var node = lifeNodesMap[this.dataset.id];
+        if (!node) return;
+        showDetail(node);
+        pipelineEl.querySelectorAll(".pipeline-node").forEach(function (n) { n.style.outline = ""; });
+        this.style.outline = "1px solid rgba(255,255,255,0.35)";
+      });
+    });
+  }
+
+  document.getElementById("pdetail-close").addEventListener("click", function () {
+    detailEl.classList.remove("visible");
+    pipelineEl.querySelectorAll(".pipeline-node").forEach(function (n) { n.style.outline = ""; });
+  });
+
+  buildPipeline();
+
+  // Lifecycle: list of classified manipulations
+  document.getElementById("manips").innerHTML = d.lifecycleNodes
+    .filter((n) => n.risk)
+    .map((n) => {
+      const color = n.risk === 'critical' ? '#dc2626' : n.risk === 'warn' ? '#f59e0b' : '#34d399';
+      return `<div class="small mb-2 manip-row" style="padding:8px 12px;border-radius:6px;background:rgba(0,0,0,0.18);border-left:3px solid ${color};">
+        <strong>${n.label}</strong>
+        <span class="badge ms-1" style="background:rgba(0,0,0,0.25);color:${color};border:1px solid ${color};font-size:0.6rem;">${n.risk}</span>
+        <span class="badge ms-1" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:0.6rem;">${n.rationale}</span>
+        ${n.note ? `<div class="text-muted mt-1">${n.note}</div>` : ''}
+      </div>`;
+    }).join('') || '<div class="text-success small"><i class="fas fa-check-circle me-1"></i>No flagged manipulations.</div>';
+
+  // Git log
+  const commitListEl = document.getElementById("commit-list");
+  const btnRestore = document.getElementById("btn-restore");
+  const btnPull = document.getElementById("btn-pull");
+  const btnPush = document.getElementById("btn-push");
+  const toastEl = document.getElementById("app-toast");
+  const toastMsg = document.getElementById("app-toast-msg");
+  const appToast = new bootstrap.Toast(toastEl);
+
+  let headSha = d.commits[0].sha;
+  let remoteSha = d.commits[1].sha;
+  let selectedSha = d.commits[1].sha;
+  let restoredSha = null;
+
+  function showToast(message, type) {
+    toastMsg.textContent = message;
+    toastEl.classList.remove("text-bg-secondary", "text-bg-success", "text-bg-info", "text-bg-warning");
+    toastEl.classList.add("text-bg-" + (type || "success"));
+    appToast.show();
+  }
+
+  function renderCommitList() {
+    commitListEl.innerHTML = d.commits.map((c) => {
+      let badges = "";
+      if (c.sha === headSha) badges += '<span class="branch-badge head"><i class="fas fa-code-branch" style="font-size:0.5rem;"></i> main</span>';
+      if (c.sha === remoteSha) badges += '<span class="branch-badge remote"><i class="fas fa-cloud-upload-alt" style="font-size:0.5rem;"></i> origin/main</span>';
+      if (c.sha === restoredSha) badges += '<span class="badge ms-1" style="background:rgba(5,150,105,0.2);color:#34d399;border:1px solid rgba(5,150,105,0.4);font-size:0.6rem;"><i class="fas fa-check"></i> restored</span>';
+      return '<div class="commit-row ' + (c.sha === selectedSha ? 'active' : '') + ' ' + (c.sha === restoredSha ? 'restored' : '') + '" data-sha="' + c.sha + '"><div class="d-flex justify-content-between align-items-start"><div style="flex:1;"><div class="small" style="font-weight:600;color:white;">' + c.message.split('\n')[0] + '</div><div class="small text-muted" style="margin-top:2px;">' + c.author + ' · ' + c.date + '</div></div><div class="d-flex align-items-center" style="gap:8px;">' + badges + '<span class="commit-sha">' + c.short + '</span></div></div></div>';
+    }).join('');
+    commitListEl.querySelectorAll(".commit-row").forEach((el) => {
+      el.addEventListener("click", () => showCommit(el.dataset.sha));
+    });
+  }
+
+  function showCommit(sha) {
+    const c = d.commits.find((x) => x.sha === sha);
+    if (!c) return;
+    selectedSha = sha;
+    btnRestore.disabled = false;
+    document.getElementById("commit-title").innerHTML = `<i class="fas fa-info-circle me-2 text-info"></i>${c.message.split('\n')[0]} <span class="commit-sha ms-2">${c.short}</span>`;
+    let html = `<div class="small text-muted mb-2">${c.author} · ${c.date}</div>`;
+    if (sha === restoredSha) {
+      html += `<div class="restore-banner mb-3"><i class="fas fa-check-circle me-1"></i><strong>Restored</strong> — Repository is at this commit.</div>`;
+    }
+    if (c.run_record) {
+      html += `<div class="mb-2"><span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);"><i class="fas fa-bolt me-1"></i>SciTrace:Run</span></div>`;
+      html += `<div class="small mb-2">This commit was produced by a tracked script execution. The run record below is embedded in the commit message:</div>`;
+      const scriptName = c.run_record.command.split("/").pop();
+      html += `<div class="run-record">[SciTrace:Run] ${scriptName}\n--- SciTrace:Record-Begin ---\n${JSON.stringify(c.run_record, null, 2)}\n--- SciTrace:Record-End ---</div>`;
+    } else {
+      html += `<div class="small mb-2">${c.message}</div>`;
+    }
+    html += `<div class="mt-3"><span style="display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:rgba(255,255,255,0.55);font-weight:700;margin-bottom:0.5rem;">Changed files</span>`;
+    html += `<ul class="small mb-0">${c.changed.map((f) => `<li><code>${f}</code></li>`).join('')}</ul></div>`;
+    document.getElementById("commit-detail").innerHTML = html;
+    commitListEl.querySelectorAll(".commit-row").forEach((el) => el.classList.toggle("active", el.dataset.sha === sha));
+  }
+
+  btnRestore.addEventListener("click", function () {
+    if (!selectedSha) return;
+    if (!confirm("Restore repository to commit " + selectedSha + "?")) return;
+    restoredSha = selectedSha;
+    headSha = selectedSha;
+    renderCommitList();
+    showCommit(selectedSha);
+    const c = d.commits.find((x) => x.sha === selectedSha);
+    showToast("Repository restored to " + c.short + " — " + c.message.split('\n')[0], "success");
+  });
+
+  btnPush.addEventListener("click", function () {
+    const icon = btnPush.querySelector("i");
+    const origClass = icon.className;
+    icon.className = "fas fa-spinner me-1";
+    btnPush.disabled = true;
+    btnPull.disabled = true;
+    setTimeout(function () {
+      if (remoteSha === headSha) {
+        showToast("Everything up to date.", "info");
+      } else {
+        remoteSha = headSha;
+        renderCommitList();
+        showCommit(selectedSha);
+        const c = d.commits.find((x) => x.sha === remoteSha);
+        showToast("Pushed — origin/main is now at " + c.short, "success");
+      }
+      icon.className = origClass;
+      btnPush.disabled = false;
+      btnPull.disabled = false;
+    }, 1000);
+  });
+
+  btnPull.addEventListener("click", function () {
+    const icon = btnPull.querySelector("i");
+    const origClass = icon.className;
+    icon.className = "fas fa-spinner me-1";
+    btnPull.disabled = true;
+    btnPush.disabled = true;
+    setTimeout(function () {
+      if (headSha === remoteSha) {
+        showToast("Already up to date.", "info");
+      } else {
+        headSha = remoteSha;
+        restoredSha = null;
+        renderCommitList();
+        showCommit(headSha);
+        const c = d.commits.find((x) => x.sha === headSha);
+        showToast("Pulled — HEAD is now at " + c.short, "success");
+      }
+      icon.className = origClass;
+      btnPull.disabled = false;
+      btnPush.disabled = false;
+    }, 800);
+  });
+
+  renderCommitList();
+  showCommit(selectedSha);
+});
+</script>
+
+<!-- Script View Modal -->
+<div class="modal fade" id="scriptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);">
+      <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+        <h6 class="mb-0"><i class="fas fa-file-code me-2 text-info"></i><span id="script-modal-title">Script</span></h6>
+        <div class="d-flex" style="gap:0.5rem;">
+          <button class="btn btn-sm btn-outline-warning" id="script-edit-btn" type="button"><i class="fas fa-edit me-1"></i>Edit</button>
+          <button class="btn btn-sm btn-outline-primary" id="script-run-btn" type="button"><i class="fas fa-play me-1"></i>Run</button>
+          <button class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-body p-0">
+        <div id="script-dep-hint" style="display:none; padding:10px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:#fcd34d; font-size:0.82rem;">
+          <i class="fas fa-exclamation-triangle me-2"></i><span id="script-dep-text"></span>
+        </div>
+        <div id="script-code-view"><pre class="script-code-block"><code id="script-code-content" class="language-python"></code></pre></div>
+        <div id="script-editor-view" style="display:none;"><textarea id="script-editor-textarea" class="script-editor"></textarea></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Terminal Popup -->
+<div id="terminal-popup">
+  <div class="terminal-bar">
+    <span class="terminal-dot red" id="term-close" title="Close terminal"></span>
+    <span class="terminal-dot amber"></span>
+    <span class="terminal-dot green"></span>
+    <span class="terminal-title">terminal — python</span>
+  </div>
+  <div class="terminal-output" id="script-terminal-output"></div>
+</div>
+
+<!-- File Preview Modal -->
+<div class="modal fade" id="filePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.08);">
+      <div class="modal-header" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+        <h6 class="mb-0" id="file-preview-title"><i class="fas fa-file me-2 text-info"></i>File Preview</h6>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-3 d-flex align-items-center justify-content-center"
+           id="file-preview-body" style="min-height:400px;overflow:auto;">
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

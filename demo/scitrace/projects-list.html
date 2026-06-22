@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects · SciTrace</title>
+    <link rel="icon" type="image/png" href="../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/chrome.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="scitrace" data-active="projects">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+    <div class="page-heading d-flex justify-content-between align-items-end"><div><h1>Projects</h1><p>Research project containers — each holds dataflows and tasks.</p></div><button class="btn btn-primary" disabled><i class="fas fa-plus me-1"></i>New Project</button></div>
+
+    <div class="row g-3" id="proj-row"></div>
+</main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/demo-data.js"></script>
+<script src="../../assets/js/demo-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const p = window.DEMO.project;
+  document.getElementById("proj-row").innerHTML = `
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 style="color:white;font-weight:700;">${p.name}</h5>
+            <span class="badge badge-ongoing">${p.status}</span>
+          </div>
+          <p class="small text-muted">${p.description}</p>
+          <div class="small mb-2"><i class="fas fa-user me-1 text-muted"></i>${p.admin}</div>
+          <div class="small text-muted mb-3">
+            ${p.collaborators.map(c => `<span class="badge me-1 mb-1" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-weight:normal;">${c}</span>`).join("")}
+          </div>
+          <a href="project-view.html" class="btn btn-sm btn-primary"><i class="fas fa-eye me-1"></i>Open</a>
+        </div>
+      </div>
+    </div>`;
+});
+</script>
+</body>
+</html>
