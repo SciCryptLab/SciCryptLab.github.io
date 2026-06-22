@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For reviewers — SciVerify · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="usecases">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <div style="display:flex;gap:0.75rem;align-items:center;margin-bottom:1rem;">
+                <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-56">
+            </div>
+            <div class="role-eyebrow">Use case · reviewers</div>
+            <h1>The data lineage, right next to the manuscript.</h1>
+            <p>Stop reading methods sections in the dark. When the author linked a SciTrace dataflow, you see the actual lineage — every input, every script, every figure tied back to a real commit — in the same view as the PDF.</p>
+            <a href="demo/sciverify/reviewer/dashboard.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>Open the reviewer demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="mock-split" style="width:100%;">
+                <div class="pane">
+                    <div class="pane-label"><i class="fas fa-file-alt me-1"></i>Manuscript</div>
+                    <!-- Phase 1: text skeleton bars (collapses after delay) -->
+                    <div class="manuscript-bars">
+                        <div class="doc-line"></div>
+                        <div class="doc-line mid"></div>
+                        <div class="doc-line"></div>
+                        <div class="doc-line short"></div>
+                        <div class="doc-line"></div>
+                        <div class="doc-line mid"></div>
+                        <div class="doc-line short"></div>
+                        <div class="doc-line"></div>
+                    </div>
+                    <!-- Phase 2: flagged analysis (fades in after bars collapse) -->
+                    <div class="manuscript-flagged">
+                        <p style="color:rgba(255,255,255,0.82);font-size:0.76rem;line-height:1.65;margin:0;">In conclusion, <mark style="background:rgba(248,113,113,0.25);color:#fecaca;border-radius:3px;padding:0 3px;">as an AI language model, I cannot</mark><sup style="color:rgba(248,113,113,0.9);font-size:0.55rem;vertical-align:super;">¹</sup> overstate the importance of these findings. The cellular mechanisms <mark style="background:rgba(251,191,36,0.22);color:#fde68a;border-radius:3px;padding:0 3px;">delve into a rich tapestry</mark><sup style="color:rgba(251,191,36,0.9);font-size:0.55rem;vertical-align:super;">²</sup> of signaling cascades — supported by <mark style="background:rgba(248,113,113,0.25);color:#fecaca;border-radius:3px;padding:0 3px;">[Müller et al., 2021]</mark><sup style="color:rgba(248,113,113,0.9);font-size:0.55rem;vertical-align:super;">³</sup>, a citation that could not be verified.</p>
+                        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.6rem;font-size:0.62rem;color:rgba(255,255,255,0.4);">
+                            <span><sup style="color:rgba(248,113,113,0.9);font-weight:700;">¹</sup> Chatbot leak</span>
+                            <span><sup style="color:rgba(251,191,36,0.9);font-weight:700;">²</sup> Tortured phrasing</span>
+                            <span><sup style="color:rgba(248,113,113,0.9);font-weight:700;">³</sup> Hallucinated citation</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pane graph">
+                    <svg viewBox="0 0 460 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10" fill="rgba(255,255,255,0.5)"/></marker></defs>
+                        <path class="edge e-in" d="M70,82 V140 H155" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" fill="none" marker-end="url(#arr2)"/>
+                        <path class="edge e-in" d="M70,198 V140 H155" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" fill="none" marker-end="url(#arr2)"/>
+                        <path class="edge e-out" d="M305,140 H322" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" fill="none"/>
+                        <line class="edge e-out" x1="322" y1="140" x2="385" y2="82" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" marker-end="url(#arr2)"/>
+                        <line class="edge e-out" x1="322" y1="140" x2="385" y2="198" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" marker-end="url(#arr2)"/>
+                        <rect class="node n-in" x="5" y="12" width="130" height="70" rx="8" fill="#10b981"/>
+                        <text x="70" y="52" text-anchor="middle" font-size="17" fill="white" font-weight="600">site_A.csv</text>
+                        <rect class="node n-in" x="5" y="198" width="130" height="70" rx="8" fill="#10b981"/>
+                        <text x="70" y="238" text-anchor="middle" font-size="17" fill="white" font-weight="600">site_B.csv</text>
+                        <rect class="node n-proc" x="155" y="105" width="150" height="70" rx="8" fill="#2563eb"/>
+                        <text x="230" y="145" text-anchor="middle" font-size="16" fill="white" font-weight="600">generate_plots.py</text>
+                        <rect class="node n-out" x="325" y="12" width="120" height="70" rx="8" fill="#f59e0b"/>
+                        <text x="385" y="52" text-anchor="middle" font-size="16" fill="white" font-weight="600">pH_figure.png</text>
+                        <rect class="node n-out" x="325" y="198" width="120" height="70" rx="8" fill="#f59e0b"/>
+                        <text x="385" y="238" text-anchor="middle" font-size="16" fill="white" font-weight="600">toxins.png</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width: 900px;">
+
+        <div class="problem-block reveal">
+            <div class="problem-eyebrow">The problem with the system today</div>
+            <h3>You get the PDF and a cover letter. The data is somewhere else.</h3>
+            <p>Methods sections omit the load-bearing step. Supporting data hides in an SI document, behind a paywall, or in a Dropbox link that will 404 in eighteen months. By the time you can ask, the author has moved on. And the unstated assumption is that you'll spot any data-manipulation issue from text alone.</p>
+        </div>
+
+        <div class="solution-block reveal">
+            <div class="problem-eyebrow">How SciCrypt solves it</div>
+            <h3>Three tabs. The manuscript, the lineage, your decision.</h3>
+            <ul>
+                <li><strong>Assignment tab.</strong> Abstract, manuscript files, your accept/decline status.</li>
+                <li><strong>Data Lifecycle tab.</strong> The full SciTrace Vis.js graph the author linked — every input, every script, every output. You can see for yourself whether Fig. 3 really did come from <code>filter_and_clean_samples.py</code> running on the published raw data.</li>
+                <li><strong>Decision tab.</strong> Recommendation form + a private comment thread with the editor that the author never sees.</li>
+            </ul>
+        </div>
+
+
+        <h2 class="reveal mt-5">The features that do the work.</h2>
+        <div class="feature-cards">
+            <a class="feature-card reveal delay-1" href="feature-dataflow-editor.html"><div class="fc-icon"><i class="fas fa-project-diagram"></i></div><h4>Dataflow editor</h4><p>The interactive lineage you inspect beside the PDF.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card reveal delay-2" href="feature-provenance-commits.html"><div class="fc-icon"><i class="fas fa-history"></i></div><h4>Provenance run records</h4><p>Confirm a figure really came from the script it claims.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal" href="feature-traceability-reproducibility.html"><div class="fc-icon"><i class="fas fa-code-branch"></i></div><h4>Traceability &amp; Reproducibility</h4><p>The data-provenance signal behind every figure.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+
+        <h2 class="reveal mt-5">See it in the demo.</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/sciverify/reviewer/dashboard.html"><div class="screen-label">SciVerify</div><div class="screen-title">Reviewer dashboard</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-1" href="demo/sciverify/reviewer/assignment.html"><div class="screen-label">SciVerify</div><div class="screen-title">Assignment with data lifecycle tab</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-2" href="demo/scitrace/dataflow-view.html"><div class="screen-label">SciTrace</div><div class="screen-title">The linked dataflow itself</div><div class="screen-arrow">Open →</div></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>

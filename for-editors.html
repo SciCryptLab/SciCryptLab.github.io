@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For editors — SciVerify · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="usecases">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-72" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">Use case · editors</div>
+            <h1>The integrity work no human could do at scale, done before the manuscript hits your queue.</h1>
+            <p>Every submission arrives pre-checked: references against Crossref, AI text indicators across every section, authors against OpenAlex, and the linked dataflow scored on traceability, reproducibility and manipulation transparency. One integrity number, with the full evidence one click away. Re-run anything.</p>
+            <a href="demo/sciverify/editor/dashboard.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>Open the editor demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="mock-inbox" style="width:100%;">
+                <div class="inbox-header"><i class="fas fa-inbox me-1"></i>Today's queue · 3 pending</div>
+                <div class="inbox-row">
+                    <div class="row-title">Comparing water quality across three river sampling sites</div>
+                    <div class="row-score score-good" data-count="82">0</div>
+                </div>
+                <div class="inbox-row">
+                    <div class="row-title">Microplastic counts in synthetic lake samples</div>
+                    <div class="row-score score-warn" data-count="71">0</div>
+                </div>
+                <div class="inbox-row">
+                    <div class="row-title">A review of filtration methods for drinking water</div>
+                    <div class="row-score score-bad" data-count="64">0</div>
+                </div>
+                <div class="text-muted small mt-3 text-center"><i class="fas fa-info-circle me-1"></i>Sort by red. Triage from there.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width: 900px;">
+
+        <div class="problem-block reveal">
+            <div class="problem-eyebrow">The problem with the system today</div>
+            <h3>You can find these problems. You just can't find all of them.</h3>
+            <p>Manual reference cross-checking, author identity checks, AI-text flagging, image-duplication review — you can do all of it, and on a quiet week you do. The problem is that the share of submissions that don't deserve a reviewer's evening has grown faster than the reviewer pool. Fabricated DOIs land in submissions every week. AI-generated discussion sections read fluent. Image duplication hides in plain sight. Ghost authors slip through. The work is no longer a corner of the desk; it is the desk.</p>
+            <p style="margin-top:0.75rem;">The result is that triage has eaten the time evaluation is supposed to protect, and a growing share of the journal's most qualified readers spend their hours separating the manuscripts worth a real review from the ones that should never have reached a reviewer at all.</p>
+        </div>
+
+        <div class="solution-block reveal">
+            <div class="problem-eyebrow">How SciCrypt solves it</div>
+            <h3>Five automated checks per submission. All re-runnable. All explainable.</h3>
+            <ul>
+                <li><strong>References.</strong> Every entry parsed, DOIs resolved against Crossref, scored on five signals (author, title, year, journal, volume). Fabricated DOIs surface immediately.</li>
+                <li><strong>AI text.</strong> 15 heuristic indicators across IMRaD sections — pasted chatbot prefixes, tortured phrasing, hallucinated citations, sentence-cadence patterns, topical drift. Critical hits force a section into the "likely AI" band on their own.</li>
+                <li><strong>Authors.</strong> Each author checked against OpenAlex for existence, ORCID linkage, and topical overlap with the manuscript. Ghost authors and identity fraud surface.</li>
+                <li><strong>Data integrity.</strong> If the author linked a SciTrace dataflow, every figure is scored for traceability and reproducibility, with provenance commits as ground truth. Manipulation transparency is assessed across the full dataset.</li>
+                <li><strong>One integrity number.</strong> Six weighted signals — traceability, reproducibility, manipulation, AI detection, references, and authors — combined into a single banded score. The full evidence is one tab click away.</li>
+            </ul>
+        </div>
+
+
+        <h2 class="reveal mt-5">How it shows up in your day.</h2>
+
+        <div class="track reveal">
+            <div class="track-number">1</div>
+            <div>
+                <h3>Open the dashboard.</h3>
+                <p>Your queue shows every pending submission with its integrity score, reviewer status, and decision state. Sort by red. Triage from there.</p>
+            </div>
+        </div>
+
+        <div class="track reveal">
+            <div class="track-number">2</div>
+            <div>
+                <h3>Open one submission.</h3>
+                <p>Five tabs: Submission, Figures, References, AI Text, Authors. Each tab shows full evidence, not a summary. Click a flagged reference to see the Crossref payload. Click a flagged AI passage to see the highlighted text. Click a flagged author to see the OpenAlex profile.</p>
+            </div>
+        </div>
+
+        <div class="track reveal">
+            <div class="track-number">3</div>
+            <div>
+                <h3>Re-run anything stale with one click.</h3>
+                <p>The author resubmitted a revision? Hit Re-run on References, AI Detection, or Authors. Caches invalidate per check. Nothing wasted, nothing missed.</p>
+            </div>
+        </div>
+
+
+
+        <h2 class="reveal mt-5">The features that do the work.</h2>
+        <div class="feature-cards">
+            <a class="feature-card sv reveal delay-1" href="feature-traceability-reproducibility.html"><div class="fc-icon"><i class="fas fa-code-branch"></i></div><h4>Traceability &amp; Reproducibility</h4><p>Traceability and reproducibility, weighted into the integrity score.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal delay-2" href="feature-reference-validation.html"><div class="fc-icon"><i class="fas fa-link"></i></div><h4>Reference validation</h4><p>Every DOI checked against Crossref.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal" href="feature-ai-text-detection.html"><div class="fc-icon"><i class="fas fa-robot"></i></div><h4>AI-text detection</h4><p>15 heuristics, highlighted triggers, per section.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal delay-1" href="feature-author-verification.html"><div class="fc-icon"><i class="fas fa-user-check"></i></div><h4>Author verification</h4><p>OpenAlex existence, linkage and field-match.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+
+        <h2 class="reveal mt-5">See it in the demo.</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/sciverify/editor/dashboard.html"><div class="screen-label">SciVerify</div><div class="screen-title">Editor dashboard</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-1" href="demo/sciverify/editor/submission-review.html"><div class="screen-label">SciVerify</div><div class="screen-title">Formal submission review (5 tabs)</div><div class="screen-arrow">Open →</div></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>
