@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Author verification — SciVerify · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <div class="crumb"><a href="features-sciverify.html">← SciVerify features</a></div>
+            <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-72" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciVerify · feature</div>
+            <h1>Real people, real expertise — or a flag.</h1>
+            <p>Each author is checked against OpenAlex for existence, ORCID linkage, and topical overlap with the manuscript. Ghost authors, identity padding, and out-of-field names surface before a reviewer is ever assigned.</p>
+            <a href="demo/sciverify/editor/submission-review.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="mock-inbox" style="width:100%;">
+                <div class="inbox-header"><i class="fas fa-user-check me-1"></i>Authors · OpenAlex check</div>
+                <div class="inbox-row"><div class="row-title">M. Andersson <span class="row-meta">· ORCID linked · in-field</span></div><div class="row-score score-good"><i class="fas fa-check"></i></div></div>
+                <div class="inbox-row"><div class="row-title">L. Romano <span class="row-meta">· exists · field mismatch</span></div><div class="row-score score-warn"><i class="fas fa-exclamation"></i></div></div>
+                <div class="inbox-row"><div class="row-title">J. Doe <span class="row-meta">· no OpenAlex record</span></div><div class="row-score score-bad"><i class="fas fa-times"></i></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:900px;">
+        <h2 class="reveal">What it is</h2>
+        <p class="section-lead reveal" style="text-align:left;max-width:none;">The check extracts the author block from the top of the manuscript — handling superscript markers, bracketed labels, plain digits and unicode affiliation symbols — and verifies each author against OpenAlex on three independent signals.</p>
+
+        <h2 class="reveal mt-5">The three signals</h2>
+        <ul class="bullet-list reveal">
+            <li><strong>Existence.</strong> An OpenAlex record with at least one indexed work, or a syntactically valid ORCID in the manuscript.</li>
+            <li><strong>Linkage.</strong> The author is tied to an ORCID and/or affiliation for identity verification.</li>
+            <li><strong>Field-match.</strong> The author's concept tags overlap the manuscript's topics (Jaccard ≥ 0.2).</li>
+        </ul>
+        <p class="reveal" style="color:rgba(255,255,255,0.6);">Each author lands in a clear pass / partial / fail bucket.</p>
+
+        <h2 class="reveal mt-5">See it in the demo</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/sciverify/editor/submission-review.html"><div class="screen-label">SciVerify</div><div class="screen-title">Authors tab in a review</div><div class="screen-arrow">Open →</div></a>
+        </div>
+
+        <h2 class="reveal mt-5">Related features</h2>
+        <div class="feature-cards">
+            <a class="feature-card sv reveal" href="feature-reference-validation.html"><div class="fc-icon"><i class="fas fa-link"></i></div><h4>Reference validation</h4><p>Verify the citations as well as the people.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>

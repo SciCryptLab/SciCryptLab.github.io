@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted &amp; on-chain publishing — SciTrace · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <div class="crumb"><a href="features-scitrace.html">← SciTrace features</a></div>
+            <img src="assets/img/scitrace-logo.png" alt="SciTrace" class="tool-logo tool-logo-64" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciTrace · feature</div>
+            <h1>Publish data you can prove — and control.</h1>
+            <p>Move a dataflow up four storage tiers — local, IPFS, on-chain anchored, archived — with strong encryption and verifiable integrity at every step. AES-256-GCM payloads, IPFS pinning, and an on-chain anchor mean anyone can confirm the data they have is the data you published.</p>
+            <a href="demo/scitrace/dashboard.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="mock-checks" style="width:100%;">
+                <div class="mc-head"><i class="fas fa-lock me-1"></i>Publish pipeline · river-water-quality</div>
+                <div class="mc-row done"><span class="mc-name"><i class="fas fa-hdd me-2" style="color:#93c5fd;"></i>Local</span><span class="mc-chip pass">Stored</span></div>
+                <div class="mc-row done"><span class="mc-name"><i class="fas fa-cube me-2" style="color:#93c5fd;"></i>IPFS · encrypted &amp; pinned</span><span class="mc-chip pass">Pinned</span></div>
+                <div class="mc-row done"><span class="mc-name"><i class="fas fa-link me-2" style="color:#93c5fd;"></i>On-chain anchor</span><span class="mc-chip pass">Anchored</span></div>
+                <div class="mc-row done"><span class="mc-name"><i class="fas fa-box-archive me-2" style="color:#93c5fd;"></i>Archive</span><span class="mc-chip pass">Sealed</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:900px;">
+        <h2 class="reveal">What it is</h2>
+        <p class="section-lead reveal" style="text-align:left;max-width:none;">SciTrace's publish pipeline encrypts a dataflow with AES-256-GCM and wraps the key with RSA-OAEP, pins the encrypted payload to IPFS via Kubo, and anchors a fingerprint on-chain through the <code>MetadataStorage</code> smart contract. Promotions between tiers go through an admin approval queue, so nothing is published by accident.</p>
+
+        <h2 class="reveal mt-5">What it can do</h2>
+        <ul class="bullet-list reveal">
+            <li><strong>Four storage tiers.</strong> <code>local</code> → <code>ipfs</code> → <code>anchored</code> → <code>archive</code>, each with its own guarantees.</li>
+            <li><strong>Encryption by default.</strong> AES-256-GCM payloads with RSA-OAEP key wrapping; recipients decrypt with an at-rest key or a hardware token.</li>
+            <li><strong>Tamper-evident.</strong> An on-chain anchor lets anyone verify the published bytes haven't changed.</li>
+            <li><strong>Cross-tier verification.</strong> One click confirms a dataflow exists consistently across disk, IPFS and chain.</li>
+            <li><strong>Approval-gated.</strong> Tier promotions and publish requests pass through an admin queue.</li>
+        </ul>
+
+        <h2 class="reveal mt-5">See it in the demo</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/scitrace/dashboard.html"><div class="screen-label">SciTrace</div><div class="screen-title">Dataflow dashboard</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-1" href="demo/scitrace/dataflow-view.html"><div class="screen-label">SciTrace</div><div class="screen-title">A dataflow you could publish</div><div class="screen-arrow">Open →</div></a>
+        </div>
+
+        <h2 class="reveal mt-5">Related features</h2>
+        <div class="feature-cards">
+            <a class="feature-card reveal" href="feature-hardware-security.html"><div class="fc-icon"><i class="fas fa-fingerprint"></i></div><h4>Hardware security</h4><p>Decrypt payloads with a YubiKey.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card reveal delay-1" href="feature-data-versioning.html"><div class="fc-icon"><i class="fas fa-code-branch"></i></div><h4>Native data versioning</h4><p>What you're publishing in the first place.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>

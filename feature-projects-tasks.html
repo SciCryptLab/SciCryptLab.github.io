@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects &amp; task tracking — SciTrace · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <div class="crumb"><a href="features-scitrace.html">← SciTrace features</a></div>
+            <img src="assets/img/scitrace-logo.png" alt="SciTrace" class="tool-logo tool-logo-64" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciTrace · feature</div>
+            <h1>Organize the work around the data.</h1>
+            <p>Group your dataflows into projects with collaborators, and keep the work moving with lightweight per-project tasks — each with a priority and a status — so the plan lives right next to the data it produces.</p>
+            <a href="demo/scitrace/tasks.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="mock-inbox" style="width:100%;">
+                <div class="inbox-header"><i class="fas fa-tasks me-1"></i>river-water-quality · tasks</div>
+                <div class="inbox-row"><div class="row-title">Re-run site-3 analysis</div><span class="chip" style="background:rgba(248,113,113,0.14);border-color:rgba(248,113,113,0.35);color:#fca5a5;font-size:0.7rem;">Urgent</span></div>
+                <div class="inbox-row"><div class="row-title">Tidy plots/ for figure 2</div><span class="chip" style="background:rgba(251,191,36,0.14);border-color:rgba(251,191,36,0.35);color:#fbbf24;font-size:0.7rem;">Ongoing</span></div>
+                <div class="inbox-row"><div class="row-title">Write metadata.json notes</div><span class="chip" style="background:rgba(52,211,153,0.14);border-color:rgba(52,211,153,0.35);color:#34d399;font-size:0.7rem;">Done</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:900px;">
+        <h2 class="reveal">What it is</h2>
+        <p class="section-lead reveal" style="text-align:left;max-width:none;">Projects give your dataflows a home: a name, a description, a research type, and a list of collaborators. Tasks track the work to be done against that project, each carrying a priority (low, medium, urgent) and a status (pending, ongoing, done).</p>
+
+        <h2 class="reveal mt-5">What it can do</h2>
+        <ul class="bullet-list reveal">
+            <li><strong>Group dataflows.</strong> Keep related datasets under one project with shared context.</li>
+            <li><strong>Invite collaborators.</strong> Attach the people working on the project.</li>
+            <li><strong>Track tasks.</strong> Capture what's next with a priority and a status, without leaving SciTrace.</li>
+            <li><strong>Stay in flow.</strong> The plan and the data live in the same place — no separate tracker to keep in sync.</li>
+        </ul>
+
+        <h2 class="reveal mt-5">See it in the demo</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/scitrace/tasks.html"><div class="screen-label">SciTrace</div><div class="screen-title">Task board</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-1" href="demo/scitrace/projects-list.html"><div class="screen-label">SciTrace</div><div class="screen-title">Projects list</div><div class="screen-arrow">Open →</div></a>
+        </div>
+
+        <h2 class="reveal mt-5">Related features</h2>
+        <div class="feature-cards">
+            <a class="feature-card reveal" href="feature-data-versioning.html"><div class="fc-icon"><i class="fas fa-code-branch"></i></div><h4>Native data versioning</h4><p>The datasets your projects organize.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card reveal delay-1" href="feature-dataflow-editor.html"><div class="fc-icon"><i class="fas fa-project-diagram"></i></div><h4>Dataflow editor</h4><p>Work on the data each task touches.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>

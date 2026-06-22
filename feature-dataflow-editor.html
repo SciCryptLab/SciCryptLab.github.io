@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive dataflow editor — SciTrace · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <div class="crumb"><a href="features-scitrace.html">← SciTrace features</a></div>
+            <img src="assets/img/scitrace-logo.png" alt="SciTrace" class="tool-logo tool-logo-64" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciTrace · feature</div>
+            <h1>Your whole pipeline as one interactive graph.</h1>
+            <p>The dataflow editor renders your dataset as a Vis.js lineage graph — raw inputs, scripts, and outputs as nodes, with the data flow between them as edges. Click any node to preview a file, run a script, or inspect what produced it.</p>
+            <a href="demo/scitrace/dataflow-view.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="repo-graph">
+                <div class="rg-badge"><i class="fas fa-hand-pointer"></i> Click a script (&#9654;) to run it</div>
+                <div class="rg-canvas">
+                    <svg class="rg-edges" viewBox="0 0 160 100" preserveAspectRatio="none">
+                        <path d="M 77 42 C 68 33, 60 25, 54 20"/>
+                        <path d="M 77 42 C 86 33, 93 25, 99 20"/>
+                        <path d="M 77 42 C 86 50, 93 58, 99 64"/>
+                        <path d="M 77 42 C 68 50, 60 58, 54 64"/>
+                        <path d="M 54 20 C 46 15, 32 9, 24 2"/>
+                        <path d="M 99 20 C 108 15, 125 8, 136 3"/>
+                        <path d="M 99 20 C 108 19, 125 16, 136 15"/>
+                    </svg>
+                    <div class="rg-node root" style="left:48%;top:42%;" data-name="river-water-quality" data-type="dataset root">river-water-quality</div>
+                    <div class="rg-node raw" style="left:34%;top:20%;" data-name="raw_data/" data-type="raw data">raw_data/</div>
+                    <div class="rg-node scripts" style="left:62%;top:20%;" data-name="scripts/" data-type="scripts">scripts/</div>
+                    <div class="rg-node results" style="left:62%;top:64%;" data-name="results/" data-type="results">results/</div>
+                    <div class="rg-node plots" style="left:34%;top:64%;" data-name="plots/" data-type="plots">plots/</div>
+                    <div class="rg-node raw" style="left:15%;top:5%;" data-name="river_samples_raw.csv" data-type="raw data">river_samples_raw.csv</div>
+                    <div class="rg-node scripts" style="left:85%;top:3%;" data-run='{"cmd":"SciTrace Run \"python scripts/filter_and_clean_samples.py\"","lines":["Loading raw_data/river_samples_raw.csv …","Applying outlier + range filters …","Writing results/samples_cleaned.csv …"],"created":"results/samples_cleaned.csv","commit":"3f9a1c2"}'>filter_and_clean_samples.py <i class="fas fa-play"></i></div>
+                    <div class="rg-node scripts" style="left:85%;top:15%;" data-run='{"cmd":"SciTrace Run \"python scripts/generate_figures.py\"","lines":["Reading results/samples_cleaned.csv …","Generating PCA.png …"],"created":"plots/PCA.png","commit":"a1c4e8"}'>generate_figures.py <i class="fas fa-play"></i></div>
+                </div>
+                <div class="rg-legend">
+                    <span><i class="dot root"></i>dataset root</span>
+                    <span><i class="dot raw"></i>raw data</span>
+                    <span><i class="dot scripts"></i>scripts</span>
+                    <span><i class="dot results"></i>results</span>
+                    <span><i class="dot plots"></i>plots</span>
+                </div>
+                <div class="rg-panel" hidden></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:900px;">
+        <h2 class="reveal">What it is</h2>
+        <p class="section-lead reveal" style="text-align:left;max-width:none;">A live, navigable map of your dataset. Nodes are files and script steps; edges are the actual data dependencies. The graph is derived from your commit history plus a local LLM analysis of each script's reads and writes — so it reflects what really happened, not a diagram you had to draw.</p>
+
+        <h2 class="reveal mt-5">What it can do</h2>
+        <ul class="bullet-list reveal">
+            <li><strong>Click to explore.</strong> Select any node to preview its contents, see its metadata, or open the script that wrote it.</li>
+            <li><strong>Run from the graph.</strong> Execute a script directly from its node and watch the outputs appear downstream.</li>
+            <li><strong>Colour-coded by type.</strong> Raw data, scripts, results and plots are instantly distinguishable.</li>
+            <li><strong>Risk tinting.</strong> Steps flagged by manipulation detection light up orange or red, right where they happen.</li>
+            <li><strong>Stage-level operations.</strong> Save, inspect, or restore from any point without leaving the view.</li>
+        </ul>
+
+        <h2 class="reveal mt-5">See it in the demo</h2>
+        <div class="screen-row">
+            <a class="screen-link reveal" href="demo/scitrace/dataflow-view.html"><div class="screen-label">SciTrace</div><div class="screen-title">Live Vis.js dataflow graph</div><div class="screen-arrow">Open →</div></a>
+            <a class="screen-link reveal delay-1" href="demo/scitrace/dataflow-list.html"><div class="screen-label">SciTrace</div><div class="screen-title">All dataflows</div><div class="screen-arrow">Open →</div></a>
+        </div>
+
+        <h2 class="reveal mt-5">Related features</h2>
+        <div class="feature-cards">
+            <a class="feature-card reveal" href="feature-provenance-commits.html"><div class="fc-icon"><i class="fas fa-history"></i></div><h4>Provenance run records</h4><p>The commits the graph is built from.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal delay-1" href="feature-manipulation-detection.html"><div class="fc-icon"><i class="fas fa-magic"></i></div><h4>Manipulation detection</h4><p>Risky transforms, flagged in the graph.</p><span class="fc-arrow">Learn more →</span></a>
+        </div>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+<script>
+(function () {
+  function initScitraceGraph() {
+    var rg = document.querySelector(".repo-graph");
+    if (!rg) return;
+    var panel = rg.querySelector(".rg-panel");
+    var canvas = rg.querySelector(".rg-canvas");
+    var edgesSvg = canvas && canvas.querySelector(".rg-edges");
+    if (!panel || !canvas) return;
+
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var dynamicNodes = [];
+    var runTimer = null;
+
+    var outputDefs = {
+      "results/samples_cleaned.csv": { cls: "results", style: "left:85%;top:64%;", edge: "M 99 64 C 108 64, 125 64, 136 64", name: "samples_cleaned.csv", type: "results" },
+      "plots/PCA.png":               { cls: "plots",   style: "left:15%;top:82%;",  edge: "M 54 64 C 46 68, 32 74, 24 82",   name: "PCA.png",              type: "plots" }
+    };
+
+    function clearDynamicNodes() {
+      dynamicNodes.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      dynamicNodes = [];
+    }
+
+    function createOutputNode(def) {
+      if (canvas.querySelector('.rg-node[data-name="' + def.name + '"]')) return;
+      var node = document.createElement("div");
+      node.className = "rg-node " + def.cls;
+      node.style.cssText = def.style;
+      node.setAttribute("data-name", def.name);
+      node.setAttribute("data-type", def.type);
+      node.textContent = def.name;
+      node.classList.add("rg-created");
+      node.style.opacity = "0";
+      node.style.transition = "opacity 0.35s ease";
+      canvas.appendChild(node);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { node.style.opacity = "1"; });
+      });
+      node.addEventListener("click", function () {
+        showInfo(def.name, def.type);
+      });
+      dynamicNodes.push(node);
+      if (edgesSvg && def.edge) {
+        var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute("d", def.edge);
+        p.classList.add("rg-edge-created");
+        p.style.opacity = "0";
+        p.style.transition = "opacity 0.35s ease";
+        edgesSvg.appendChild(p);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { p.style.opacity = "1"; });
+        });
+        dynamicNodes.push(p);
+      }
+    }
+
+    function showInfo(name, type) {
+      panel.removeAttribute("hidden");
+      panel._stId = (panel._stId || 0) + 1;
+      panel.innerHTML = '<div class="rg-info"><i class="fas fa-info-circle me-1"></i><strong>' + name + "</strong> &mdash; " + type + '. Tip: click a script (&#9654;) to run it.</div>';
+    }
+
+    function runScript(d) {
+      if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+      panel.removeAttribute("hidden");
+      var runId = (panel._stRunId = (panel._stRunId || 0) + 1);
+      var head = '<div class="rg-cmd">$ ' + d.cmd + "</div>";
+      var linesHtml = d.lines.map(function (l) { return '<div class="rg-line">' + l + "</div>"; }).join("");
+      var result = '<div class="rg-result">\u2713 exit 0 &middot; created ' + d.created + " &middot; new commit " + d.commit + " [SciTrace:Run]</div>";
+
+      if (reduceMotion) {
+        panel.innerHTML = head + linesHtml + result;
+        if (d.created && outputDefs[d.created]) createOutputNode(outputDefs[d.created]);
+        return;
+      }
+
+      panel.innerHTML = head;
+      var i = 0;
+      (function next() {
+        if (panel._stRunId !== runId) return;
+        if (i < d.lines.length) {
+          panel.insertAdjacentHTML("beforeend", '<div class="rg-line">' + d.lines[i] + "</div>");
+          i++;
+          runTimer = setTimeout(next, 430);
+        } else {
+          if (panel._stRunId !== runId) return;
+          panel.insertAdjacentHTML("beforeend", result);
+          if (d.created && outputDefs[d.created]) createOutputNode(outputDefs[d.created]);
+        }
+      })();
+    }
+
+    function rewireScriptNodes() {
+      var scriptNodes = rg.querySelectorAll(".rg-node[data-run]");
+      scriptNodes.forEach(function (node) {
+        var clone = node.cloneNode(true);
+        node.parentNode.replaceChild(clone, node);
+        clone.addEventListener("click", function () {
+          var d;
+          try { d = JSON.parse(clone.getAttribute("data-run")); } catch (e) { return; }
+          runScript(d);
+        });
+      });
+    }
+
+    rewireScriptNodes();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { setTimeout(initScitraceGraph, 50); });
+  } else {
+    setTimeout(initScitraceGraph, 50);
+  }
+})();
+</script>
+</body>
+</html>
