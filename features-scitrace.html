@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciTrace — research data lineage · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <img src="assets/img/scitrace-logo.png" alt="SciTrace" class="tool-logo tool-logo-64" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciTrace <span class="oss-badge ms-2">Open source</span></div>
+            <h1>Research data lineage, captured while you work.</h1>
+            <p>SciTrace manages your research data workflow end to end — versioning, an interactive lineage graph, and provenance that records itself every time you run a script. Track and restore your data through the browser, without touching a terminal.</p>
+            <div class="cta-row" style="justify-content:flex-start;">
+                <a href="demo/scitrace/dataflow-view.html" class="btn-cta-primary"><i class="fas fa-play me-2"></i>Open the SciTrace demo</a>
+                <a href="for-researchers.html" class="btn-cta-secondary">For researchers</a>
+            </div>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="scitrace-carousel">
+                <div class="sc-tabs">
+                    <button class="sc-tab active" data-pane="0"><i class="fas fa-project-diagram"></i><span>Dataflow graph</span></button>
+                    <button class="sc-tab" data-pane="1"><i class="fas fa-code-branch"></i><span>Git history</span></button>
+                    <button class="sc-tab" data-pane="2"><i class="fas fa-history"></i><span>Provenance</span></button>
+                </div>
+                <div class="sc-panes">
+                    <!-- pane 0: Dataflow graph -->
+                    <div class="sc-pane active">
+                        <div class="repo-graph">
+                            <div class="rg-badge"><i class="fas fa-hand-pointer"></i> Click a script (▶) to run it</div>
+                            <div class="rg-canvas">
+                                <svg class="rg-edges" viewBox="0 0 160 100" preserveAspectRatio="none">
+                                    <path d="M 77 42 C 68 33, 60 25, 54 20"/>
+                                    <path d="M 77 42 C 86 33, 93 25, 99 20"/>
+                                    <path d="M 77 42 C 86 50, 93 58, 99 64"/>
+                                    <path d="M 77 42 C 68 50, 60 58, 54 64"/>
+                                    <path d="M 54 20 C 46 15, 32 9, 24 2"/>
+                                    <path d="M 99 20 C 108 15, 125 8, 136 3"/>
+                                    <path d="M 99 20 C 108 19, 125 16, 136 15"/>
+                                </svg>
+                                <div class="rg-node root" style="left:48%;top:42%;" data-name="river-water-quality" data-type="dataset root">river-water-quality</div>
+                                <div class="rg-node raw" style="left:34%;top:20%;" data-name="raw_data/" data-type="raw data">raw_data/</div>
+                                <div class="rg-node scripts" style="left:62%;top:20%;" data-name="scripts/" data-type="scripts">scripts/</div>
+                                <div class="rg-node results" style="left:62%;top:64%;" data-name="results/" data-type="results">results/</div>
+                                <div class="rg-node plots" style="left:34%;top:64%;" data-name="plots/" data-type="plots">plots/</div>
+                                <div class="rg-node raw" style="left:15%;top:5%;" data-name="river_samples_raw.csv" data-type="raw data">river_samples_raw.csv</div>
+                                <div class="rg-node scripts" style="left:85%;top:3%;" data-run='{"cmd":"SciTrace Run \"python scripts/filter_and_clean_samples.py\"","lines":["Loading raw_data/river_samples_raw.csv …","Applying outlier + range filters …","Writing results/samples_cleaned.csv …"],"created":"results/samples_cleaned.csv","commit":"3f9a1c2"}'>filter_and_clean_samples.py <i class="fas fa-play"></i></div>
+                                <div class="rg-node scripts" style="left:85%;top:15%;" data-run='{"cmd":"SciTrace Run \"python scripts/generate_figures.py\"","lines":["Reading results/samples_cleaned.csv …","Generating PCA.png …"],"created":"plots/PCA.png","commit":"a1c4e8"}'>generate_figures.py <i class="fas fa-play"></i></div>
+                            </div>
+                            <div class="rg-legend">
+                                <span><i class="dot root"></i>dataset root</span>
+                                <span><i class="dot raw"></i>raw data</span>
+                                <span><i class="dot scripts"></i>scripts</span>
+                                <span><i class="dot results"></i>results</span>
+                                <span><i class="dot plots"></i>plots</span>
+                            </div>
+                            <div class="rg-panel" hidden></div>
+                        </div>
+                    </div>
+                    <!-- pane 1: Git history -->
+                    <div class="sc-pane">
+                        <div class="mock-inbox" style="width:100%;">
+                            <div class="inbox-header"><i class="fas fa-history me-1"></i>Git History · river-water-quality</div>
+                            <div style="padding:0.6rem 0.5rem;border-radius:0.4rem;background:rgba(255,255,255,0.04);border-left:3px solid #2563eb;margin-bottom:0.25rem;">
+                                <div style="display:flex;align-items:center;gap:0.3rem;margin-bottom:0.2rem;">
+                                    <span style="display:inline-flex;align-items:center;gap:2px;padding:0 6px;border-radius:8px;font-size:0.56rem;font-weight:600;font-family:monospace;background:rgba(5,150,105,0.18);color:#34d399;border:1px solid rgba(5,150,105,0.4);"><i class="fas fa-code-branch" style="font-size:0.42rem;"></i> main</span>
+                                    <span style="display:inline-flex;align-items:center;gap:2px;padding:0 6px;border-radius:8px;font-size:0.56rem;font-weight:600;font-family:monospace;background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.4);"><i class="fas fa-cloud-upload-alt" style="font-size:0.42rem;"></i> origin/main</span>
+                                    <span style="font-family:monospace;color:#fbbf24;font-size:0.68rem;margin-left:auto;">9b8e002</span>
+                                </div>
+                                <div style="color:white;font-weight:600;font-size:0.78rem;">[SciTrace:Run] filter_and_clean_samples.py</div>
+                                <div style="font-size:0.66rem;color:rgba(255,255,255,0.4);margin-top:1px;">Alex Chen · May 22</div>
+                            </div>
+                            <div style="padding:0.6rem 0.5rem;border-radius:0.4rem;border-left:3px solid transparent;margin-bottom:0.25rem;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;"><span></span>
+                                    <span style="font-family:monospace;color:#fbbf24;font-size:0.68rem;">1c0f5aa</span>
+                                </div>
+                                <div style="color:rgba(255,255,255,0.7);font-weight:500;font-size:0.78rem;">Tighten outlier rule</div>
+                                <div style="font-size:0.66rem;color:rgba(255,255,255,0.4);margin-top:1px;">Alex Chen · May 24</div>
+                            </div>
+                            <div style="padding:0.6rem 0.5rem;border-radius:0.4rem;border-left:3px solid transparent;margin-bottom:0.5rem;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem;"><span></span>
+                                    <span style="font-family:monospace;color:#fbbf24;font-size:0.68rem;">0a1b2c3</span>
+                                </div>
+                                <div style="color:rgba(255,255,255,0.7);font-weight:500;font-size:0.78rem;">Initial commit — scaffold dataflow</div>
+                                <div style="font-size:0.66rem;color:rgba(255,255,255,0.4);margin-top:1px;">Alex Chen · May 21</div>
+                            </div>
+                            <div style="background:rgba(37,99,235,0.06);border:1px solid rgba(37,99,235,0.15);border-radius:0.5rem;padding:0.55rem 0.7rem;margin-bottom:0.35rem;">
+                                <div style="display:flex;align-items:center;gap:0.35rem;margin-bottom:0.3rem;">
+                                    <span style="background:rgba(37,99,235,0.2);color:#93c5fd;border:1px solid rgba(37,99,235,0.3);border-radius:3px;padding:0 5px;font-size:0.53rem;font-weight:700;">SciTrace:Run</span>
+                                    <span style="color:rgba(255,255,255,0.55);font-size:0.66rem;">filter_and_clean_samples.py</span>
+                                </div>
+                                <div style="font-family:monospace;font-size:0.6rem;color:rgba(255,255,255,0.5);line-height:1.55;">
+                                    status&nbsp;&nbsp;&nbsp;<span style="color:#34d399;">success</span> · exit 0 · <span style="color:rgba(255,255,255,0.35);">2m 35s</span><br>
+                                    inputs&nbsp;&nbsp;&nbsp;<span style="color:rgba(255,255,255,0.32);">site_A/B/C.csv, parameters.json</span><br>
+                                    outputs&nbsp;&nbsp;<span style="color:rgba(255,255,255,0.32);">samples_cleaned.csv</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:0.35rem;">
+                                <div style="font-size:0.56rem;text-transform:uppercase;letter-spacing:0.04em;color:rgba(255,255,255,0.32);font-weight:700;margin-bottom:0.15rem;">Changed files</div>
+                                <div style="font-family:monospace;font-size:0.64rem;color:#34d399;">results/samples_cleaned.csv</div>
+                            </div>
+                            <div style="display:flex;gap:0.25rem;">
+                                <span style="padding:0.18rem 0.45rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.22rem;font-size:0.6rem;color:rgba(255,255,255,0.3);"><i class="fas fa-undo" style="font-size:0.5rem;margin-right:2px;"></i>Restore</span>
+                                <span style="padding:0.18rem 0.45rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.22rem;font-size:0.6rem;color:rgba(255,255,255,0.3);"><i class="fas fa-arrow-down" style="font-size:0.5rem;margin-right:2px;"></i>Pull</span>
+                                <span style="padding:0.18rem 0.45rem;border:1px solid rgba(255,255,255,0.1);border-radius:0.22rem;font-size:0.6rem;color:rgba(255,255,255,0.3);"><i class="fas fa-arrow-up" style="font-size:0.5rem;margin-right:2px;"></i>Push</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- pane 2: Provenance run record -->
+                    <div class="sc-pane">
+                        <div class="app-window" style="width:100%;">
+                            <div class="aw-bar"><span class="aw-dot r"></span><span class="aw-dot y"></span><span class="aw-dot g"></span><span class="aw-title">commit 3f9a1c2 &middot; [SciTrace:Run] filter_and_clean_samples.py</span></div>
+                            <div class="aw-body" style="min-height:auto;">
+                                <div class="aw-pane active" style="position:static;">
+                                    <pre style="margin:0;color:#cbd5e1;font-size:0.74rem;line-height:1.55;font-family:Monaco,Menlo,monospace;white-space:pre-wrap;">Initial filtered &amp; cleaned dataset
+
+<span style="color:#93c5fd;">[SciTrace:Run]</span> filter_and_clean_samples.py
+
+--- SciTrace:Record-Begin ---
+{
+  <span style="color:#6ee7b7;">"scitrace_version"</span>: "1.0",
+  <span style="color:#6ee7b7;">"run_id"</span>: "d5c9e2b",
+  <span style="color:#6ee7b7;">"command"</span>: "python scripts/filter_and_clean_samples.py",
+  <span style="color:#6ee7b7;">"working_directory"</span>: "/data/river-water-quality",
+  <span style="color:#6ee7b7;">"status"</span>: "success",
+  <span style="color:#6ee7b7;">"exit_code"</span>: 0,
+  <span style="color:#6ee7b7;">"start_time"</span>: "2026-05-22T15:58:30Z",
+  <span style="color:#6ee7b7;">"end_time"</span>: "2026-05-22T16:01:05Z",
+  <span style="color:#6ee7b7;">"duration_sec"</span>: 155,
+  <span style="color:#6ee7b7;">"inputs"</span>: ["raw_data/river_samples_raw.csv"],
+  <span style="color:#6ee7b7;">"outputs"</span>: ["results/samples_cleaned.csv"],
+  <span style="color:#6ee7b7;">"resources"</span>: {
+    <span style="color:#6ee7b7;">"cpu_peak_percent"</span>: 45.1,
+    <span style="color:#6ee7b7;">"cpu_user_sec"</span>: 22.7,
+    <span style="color:#6ee7b7;">"memory_peak_mb"</span>: 128.3,
+    <span style="color:#6ee7b7;">"memory_avg_mb"</span>: 95.6,
+    <span style="color:#6ee7b7;">"disk_io_mb"</span>: 67.2
+  }
+}
+--- SciTrace:Record-End ---</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sc-progress">
+                    <span class="sc-dot active"></span>
+                    <span class="sc-dot"></span>
+                    <span class="sc-dot"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="reveal">Everything SciTrace does.</h2>
+        <p class="section-lead reveal">A native Git + git-annex engine under a web interface — no command line. Pick a capability to go deeper.</p>
+        <div class="feature-cards" style="grid-template-columns: repeat(3, 1fr);">
+            <a class="feature-card reveal" href="feature-data-versioning.html">
+                <div class="fc-icon"><i class="fas fa-code-branch"></i></div>
+                <h4>Native data versioning</h4>
+                <p>Structured dataflows (<code>raw_data/ scripts/ results/ plots/</code>) versioned with Git + git-annex. Restore any file from any point in history — from the browser.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card reveal delay-1" href="feature-dataflow-editor.html">
+                <div class="fc-icon"><i class="fas fa-project-diagram"></i></div>
+                <h4>Interactive dataflow editor</h4>
+                <p>A Vis.js graph of files and scripts. Click any node to preview, run, or inspect. Colour-coded by type, with lineage derived automatically.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card reveal delay-2" href="feature-provenance-commits.html">
+                <div class="fc-icon"><i class="fas fa-history"></i></div>
+                <h4>Provenance run records</h4>
+                <p>Run a script through SciTrace and the command, inputs, outputs and exit status are written into a <code>[SciTrace:Run]</code> commit. Provenance, free.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card reveal delay-1" href="feature-hardware-security.html">
+                <div class="fc-icon"><i class="fas fa-fingerprint"></i></div>
+                <h4>Hardware-secured access</h4>
+                <p>Passwordless WebAuthn/FIDO2 login with YubiKey, Touch ID or Windows Hello, plus on-device decryption and revocable API tokens.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card reveal delay-2" href="feature-projects-tasks.html">
+                <div class="fc-icon"><i class="fas fa-tasks"></i></div>
+                <h4>Projects &amp; task tracking</h4>
+                <p>Group dataflows into projects with collaborators, and track the work with per-project tasks, priorities and statuses.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="text-align:center;">
+    <div class="container">
+        <h2 class="reveal">Open source. Self-hostable. Yours.</h2>
+        <p class="section-lead reveal">Your manuscripts and raw data never have to leave your infrastructure. Every score formula and rule is readable code.</p>
+        <a href="demo/scitrace/dashboard.html" class="btn-cta-primary reveal"><i class="fas fa-play me-2"></i>Explore SciTrace in the demo</a>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+<script>
+(function () {
+  function initScitraceGraph() {
+    var rg = document.querySelector(".scitrace-carousel .repo-graph");
+    if (!rg) return;
+    var panel = rg.querySelector(".rg-panel");
+    var canvas = rg.querySelector(".rg-canvas");
+    var edgesSvg = canvas && canvas.querySelector(".rg-edges");
+    if (!panel || !canvas) return;
+
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var dynamicNodes = [];
+    var runTimer = null;
+
+    var outputDefs = {
+      "results/samples_cleaned.csv": { cls: "results", style: "left:85%;top:64%;", edge: "M 99 64 C 108 64, 125 64, 136 64", name: "samples_cleaned.csv", type: "results" },
+      "plots/PCA.png":               { cls: "plots",   style: "left:15%;top:82%;",  edge: "M 54 64 C 46 68, 32 74, 24 82",   name: "PCA.png",              type: "plots" }
+    };
+
+    function clearDynamicNodes() {
+      dynamicNodes.forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
+      dynamicNodes = [];
+    }
+
+    function createOutputNode(def) {
+      if (canvas.querySelector('.rg-node[data-name="' + def.name + '"]')) return;
+      var node = document.createElement("div");
+      node.className = "rg-node " + def.cls;
+      node.style.cssText = def.style;
+      node.setAttribute("data-name", def.name);
+      node.setAttribute("data-type", def.type);
+      node.textContent = def.name;
+      node.classList.add("rg-created");
+      node.style.opacity = "0";
+      node.style.transition = "opacity 0.35s ease";
+      canvas.appendChild(node);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { node.style.opacity = "1"; });
+      });
+      node.addEventListener("click", function () {
+        showInfo(def.name, def.type);
+      });
+      dynamicNodes.push(node);
+      if (edgesSvg && def.edge) {
+        var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute("d", def.edge);
+        p.classList.add("rg-edge-created");
+        p.style.opacity = "0";
+        p.style.transition = "opacity 0.35s ease";
+        edgesSvg.appendChild(p);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { p.style.opacity = "1"; });
+        });
+        dynamicNodes.push(p);
+      }
+    }
+
+    function showInfo(name, type) {
+      panel.removeAttribute("hidden");
+      panel._stId = (panel._stId || 0) + 1;
+      panel.innerHTML = '<div class="rg-info"><i class="fas fa-info-circle me-1"></i><strong>' + name + "</strong> &mdash; " + type + '. Tip: click a script (&#9654;) to run it.</div>';
+    }
+
+    function runScript(d) {
+      if (runTimer) { clearTimeout(runTimer); runTimer = null; }
+      panel.removeAttribute("hidden");
+      var runId = (panel._stRunId = (panel._stRunId || 0) + 1);
+      var head = '<div class="rg-cmd">$ ' + d.cmd + "</div>";
+      var linesHtml = d.lines.map(function (l) { return '<div class="rg-line">' + l + "</div>"; }).join("");
+      var result = '<div class="rg-result">\u2713 exit 0 &middot; created ' + d.created + " &middot; new commit " + d.commit + " [SciTrace:Run]</div>";
+
+      if (reduceMotion) {
+        panel.innerHTML = head + linesHtml + result;
+        if (d.created && outputDefs[d.created]) createOutputNode(outputDefs[d.created]);
+        return;
+      }
+
+      panel.innerHTML = head;
+      var i = 0;
+      (function next() {
+        if (panel._stRunId !== runId) return;
+        if (i < d.lines.length) {
+          panel.insertAdjacentHTML("beforeend", '<div class="rg-line">' + d.lines[i] + "</div>");
+          i++;
+          runTimer = setTimeout(next, 430);
+        } else {
+          if (panel._stRunId !== runId) return;
+          panel.insertAdjacentHTML("beforeend", result);
+          if (d.created && outputDefs[d.created]) createOutputNode(outputDefs[d.created]);
+        }
+      })();
+    }
+
+    function rewireScriptNodes() {
+      var scriptNodes = rg.querySelectorAll(".rg-node[data-run]");
+      scriptNodes.forEach(function (node) {
+        var clone = node.cloneNode(true);
+        node.parentNode.replaceChild(clone, node);
+        clone.addEventListener("click", function () {
+          var d;
+          try { d = JSON.parse(clone.getAttribute("data-run")); } catch (e) { return; }
+          runScript(d);
+        });
+      });
+    }
+
+    rewireScriptNodes();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () { setTimeout(initScitraceGraph, 50); });
+  } else {
+    setTimeout(initScitraceGraph, 50);
+  }
+})();
+</script>
+</body>
+</html>
