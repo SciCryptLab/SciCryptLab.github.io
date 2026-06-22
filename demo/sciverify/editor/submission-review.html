@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission review · SciVerify</title>
+    <link rel="icon" type="image/png" href="../../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../../assets/css/chrome.css" rel="stylesheet">
+    <style>
+      .meta-section-label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.55); font-weight: 700; margin-bottom: 0.75rem; }
+      .fig-card { border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; height: 100%; }
+      .fig-card .fig-num { color: rgba(255,255,255,0.5); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+      .fig-card .fig-cap { color: white; font-weight: 500; font-size: 0.9rem; margin-bottom: 0.5rem; }
+      .sub-score { text-align: center; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 6px; }
+      .sub-score .label { font-size: 0.65rem; text-transform: uppercase; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; }
+      .sub-score .num { font-weight: 700; font-size: 1.1rem; }
+      .msg-bubble { padding: 0.75rem 1rem; border-radius: 0.85rem; max-width: 70%; margin-bottom: 0.5rem; }
+      .msg-bubble.editor { background: rgba(37,99,235,0.18); border: 1px solid rgba(37,99,235,0.35); margin-right: auto; }
+      .msg-bubble.author { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.35); margin-left: auto; }
+      .msg-meta { font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-bottom: 0.3rem; }
+    </style>
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="sciverify" data-active="dashboard">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+
+    <div class="page-heading">
+        <div class="d-flex align-items-center mb-2">
+            <a href="dashboard.html" class="btn btn-sm btn-outline-secondary me-3"><i class="fas fa-arrow-left me-1"></i>Back to queue</a>
+            <span class="badge me-2" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">Submission #101</span>
+            <span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">submitted · pending decision</span>
+        </div>
+        <h1 id="ms-title"></h1>
+        <p><span id="ms-journal"></span> · <span id="ms-type"></span> · Submitted <span id="ms-date"></span></p>
+    </div>
+
+    <ul class="nav nav-tabs mb-3 flex-nowrap" role="tablist" style="overflow-x:auto;flex-wrap:nowrap;">
+        <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#overview-tab" type="button"><i class="fas fa-info-circle me-1"></i>Overview</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#integrity-tab" type="button"><i class="fas fa-shield-alt me-1"></i>Integrity</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#references-tab" type="button"><i class="fas fa-bookmark me-1"></i>References</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ai-tab" type="button"><i class="fas fa-robot me-1"></i>AI Detection</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#authors-tab" type="button"><i class="fas fa-user-check me-1"></i>Authors</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lifecycle-tab" type="button"><i class="fas fa-project-diagram me-1"></i>Data Lifecycle</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#convo-tab" type="button"><i class="fas fa-comments me-1"></i>Conversation</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- OVERVIEW -->
+        <div class="tab-pane fade show active" id="overview-tab" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <span class="meta-section-label">Abstract</span>
+                            <p id="abstract" style="line-height:1.6;"></p>
+                            <span class="meta-section-label mt-3">Keywords</span>
+                            <div id="keywords"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <span class="meta-section-label">Reviewers</span>
+                            <div id="reviewers"></div>
+                            <button class="btn btn-sm btn-outline-primary mt-2" disabled><i class="fas fa-user-plus me-1"></i>Invite reviewer</button>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <span class="meta-section-label">Decision</span>
+                            <form data-demo-redirect="dashboard.html" data-demo-msg="Recording decision…">
+                                <select class="form-select mb-2">
+                                    <option>Accept</option>
+                                    <option selected>Minor Revision</option>
+                                    <option>Major Revision</option>
+                                    <option>Reject</option>
+                                </select>
+                                <textarea class="form-control mb-2" rows="3" placeholder="Notes to the author…">Discussion section needs revision — chatbot reply text and the Smith et al. (Science 401, 2025) citation must be removed before resubmission.</textarea>
+                                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-check me-1"></i>Record Decision</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTEGRITY -->
+        <div class="tab-pane fade" id="integrity-tab" role="tabpanel">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header"><h5 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i>Overall Integrity Score</h5></div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div id="trust-ring" style="width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:1.5rem;">
+                            <div><div id="trust-num" style="font-size:2rem;font-weight:800;text-align:center;"></div><small class="text-muted d-block text-center">INTEGRITY</small></div>
+                        </div>
+                        <div>
+                            <div class="small text-muted mb-1">Weighted across all linked figures.</div>
+                            <div id="dim-tiles" class="row g-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><h5 class="mb-0"><i class="fas fa-images me-2 text-info"></i>Figures &amp; their integrity</h5></div>
+                <div class="card-body">
+                    <div class="row g-3" id="figures"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERENCES — full evidence -->
+        <div class="tab-pane fade" id="references-tab" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-bookmark me-2 text-info"></i>Reference Validation</h5>
+                    <button type="button" class="btn btn-sm btn-outline-info" data-demo-rerun><i class="fas fa-rotate-right me-1"></i>Re-run</button>
+                </div>
+                <div class="card-body" id="ref-mount"></div>
+            </div>
+        </div>
+
+        <!-- AI DETECTION — full evidence -->
+        <div class="tab-pane fade" id="ai-tab" role="tabpanel">
+            <div class="d-flex justify-content-end mb-2">
+                <button type="button" class="btn btn-sm btn-outline-info" data-demo-rerun><i class="fas fa-rotate-right me-1"></i>Re-run</button>
+            </div>
+            <div id="ai-mount"></div>
+        </div>
+
+        <!-- AUTHORS — full evidence -->
+        <div class="tab-pane fade" id="authors-tab" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-user-check me-2 text-info"></i>Author Validation</h5>
+                    <button type="button" class="btn btn-sm btn-outline-info" data-demo-rerun><i class="fas fa-rotate-right me-1"></i>Re-run</button>
+                </div>
+                <div class="card-body" id="authors-mount"></div>
+            </div>
+        </div>
+
+        <!-- DATA LIFECYCLE -->
+        <div class="tab-pane fade" id="lifecycle-tab" role="tabpanel">
+            <div class="alert" style="background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.35);color:rgba(255,255,255,0.85);"><i class="fas fa-info-circle me-2 text-info"></i>SciTrace dataflow linked by the author. Click any node to inspect the provenance chain.</div>
+
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-project-diagram me-2 text-info"></i>Data lifecycle (AI-derived)</h5>
+                    <button class="btn btn-sm btn-outline-secondary" disabled><i class="fas fa-sync me-1"></i>Regenerate</button>
+                </div>
+                <div class="card-body">
+                    <div id="lifecycle-pipeline" class="pipeline-grid"></div>
+                    <div class="pipeline-detail" id="pipeline-detail">
+                        <div class="d-flex justify-content-between align-items-center mb-2" style="gap:8px;">
+                            <h6 class="mb-0" id="pdetail-title" style="font-size:0.85rem;"></h6>
+                            <button class="btn btn-sm btn-outline-secondary" id="pdetail-close" type="button" style="flex-shrink:0;"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-sm-6"><div class="detail-label">Type</div><div class="detail-val" id="pdetail-type">—</div></div>
+                            <div class="col-sm-6" id="pdetail-script-row"><div class="detail-label">Script</div><div class="detail-val" id="pdetail-script">—</div></div>
+                            <div class="col-sm-6" id="pdetail-risk-row" style="display:none;"><div class="detail-label">Risk</div><div class="detail-val" id="pdetail-risk">—</div></div>
+                            <div class="col-sm-6" id="pdetail-rationale-row" style="display:none;"><div class="detail-label">Rationale</div><div class="detail-val" id="pdetail-rationale">—</div></div>
+                            <div class="col-12" id="pdetail-note-row" style="display:none;"><div class="detail-label">Note</div><div class="detail-val" id="pdetail-note">—</div></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap mt-3" style="gap: 1rem;font-size:0.85rem;">
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#10b981;border-radius:3px;vertical-align:middle;"></span> raw data</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#2563eb;border-radius:3px;vertical-align:middle;"></span> processing</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#f59e0b;border-radius:3px;vertical-align:middle;"></span> visualization</span>
+                        <span><span style="display:inline-block;width:14px;height:14px;background:#ef4444;border-radius:3px;vertical-align:middle;"></span> output</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header"><h6 class="mb-0"><i class="fas fa-flag me-2 text-warning"></i>Manipulations classified</h6></div>
+                <div class="card-body" id="manips"></div>
+            </div>
+        </div>
+
+        <!-- CONVERSATION -->
+        <div class="tab-pane fade" id="convo-tab" role="tabpanel">
+            <div class="card shadow-sm">
+                <div class="card-header"><h5 class="mb-0"><i class="fas fa-comments me-2 text-info"></i>Editor ↔ author thread</h5></div>
+                <div class="card-body">
+                    <div id="thread" class="d-flex flex-column mb-3" style="gap:0.5rem;"></div>
+                    <form data-demo-redirect="submission-review.html" data-demo-msg="Sending message…" onsubmit="return false;">
+                        <textarea class="form-control mb-2" rows="2" placeholder="Reply to author…"></textarea>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane me-1"></i>Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../../assets/js/chrome.js"></script>
+<script src="../../../assets/js/demo-data.js"></script>
+<script src="../../../assets/js/demo-router.js"></script>
+<script src="../../../assets/js/sciverify-checks.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const d = window.DEMO;
+  const m = d.manuscript;
+  const bandColor = (s) => s >= 70 ? '#34d399' : s >= 40 ? '#fbbf24' : '#f87171';
+
+  document.getElementById("ms-title").textContent = m.title;
+  document.getElementById("ms-journal").textContent = m.journal;
+  document.getElementById("ms-type").textContent = m.manuscript_type;
+  document.getElementById("ms-date").textContent = m.submitted_at;
+  document.getElementById("abstract").textContent = m.abstract;
+  document.getElementById("keywords").innerHTML = m.keywords.map((k) => `<span class="badge me-1 mb-1" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-weight:normal;">${k}</span>`).join("");
+
+  document.getElementById("reviewers").innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-2"><div><strong>R. Tomkins</strong><div class="small text-muted">Peer Reviews · invited 2026-05-31</div></div><span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">accepted</span></div>
+    <div class="d-flex justify-content-between align-items-center mb-2"><div><strong>L. Park</strong><div class="small text-muted">TU Munich · invited 2026-05-31</div></div><span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">pending</span></div>
+  `;
+
+  // Integrity tab
+  const overall = d.overallIntegrity;
+  const tc = bandColor(overall);
+  document.getElementById("trust-ring").style.border = `4px solid ${tc}`;
+  document.getElementById("trust-num").style.color = tc;
+  document.getElementById("trust-num").textContent = overall + "%";
+
+  const dims = [
+    ['Traceability', d.verification.traceability.score, 15],
+    ['Reproducibility', d.verification.reproducibility.score, 25],
+    ['Manipulation', d.verification.manipulation.score, 20],
+    ['AI Detection', d.aiIntegrityScore, 10],
+    ['References', d.refScore, 20],
+    ['Authors', d.authorsScore, 10],
+  ];
+  document.getElementById("dim-tiles").innerHTML = dims.map(([label, val, w]) => `
+    <div class="col-6"><div class="p-2" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;">
+      <div class="small text-muted" style="font-size:0.7rem;">${label} <span class="text-white-50">(${w}%)</span></div>
+      <div style="font-weight:700;color:${bandColor(val)};">${val}%</div>
+    </div></div>`).join("");
+
+  document.getElementById("figures").innerHTML = d.figures.map((f) => {
+    const fScores = f.scores;
+    const figOverall = Math.round((fScores.traceability * 0.375 + fScores.reproducibility * 0.625));
+    const fc = bandColor(figOverall);
+    return `<div class="col-md-6">
+      <div class="fig-card">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div><div class="fig-num">${f.type} ${f.number}</div><div class="fig-cap">${f.caption}</div></div>
+          <div class="text-end">
+            <div style="font-weight:800;font-size:1.4rem;color:${fc};">${figOverall}%</div>
+            <div class="small text-muted">integrity</div>
+          </div>
+        </div>
+        <div class="small text-muted mb-2"><i class="fas fa-project-diagram me-1"></i><code>${f.node}</code></div>
+        <div class="row g-2">
+          <div class="col-6"><div class="sub-score"><div class="label">Trace. (37.5%)</div><div class="num" style="color:${bandColor(fScores.traceability)};">${fScores.traceability}</div></div></div>
+          <div class="col-6"><div class="sub-score"><div class="label">Repro. (62.5%)</div><div class="num" style="color:${bandColor(fScores.reproducibility)};">${fScores.reproducibility}</div></div></div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Shared check renderers — same evidence as the Check Tool result page.
+  window.SciVerifyChecks.renderReferences(document.getElementById("ref-mount"));
+  window.SciVerifyChecks.renderAiDetection(document.getElementById("ai-mount"));
+  window.SciVerifyChecks.renderAuthors(document.getElementById("authors-mount"));
+
+  // ── Lifecycle pipeline ────────────────────────────────────────────
+  const pipelineEl = document.getElementById("lifecycle-pipeline");
+  const detailEl = document.getElementById("pipeline-detail");
+  const lifeNodesMap = {};
+  d.lifecycleNodes.forEach(function (n) { lifeNodesMap[n.id] = n; });
+
+  var columns = [
+    { header: "Raw Inputs",       icon: "fa-database", headerBg: "#065f46", headerClass: "header-raw-data",       nodeIds: ["ls1","ls2","ls3"] },
+    { header: "filter_and_clean_samples.py",    icon: "fa-code",     headerBg: "#1e3a5f", headerClass: "header-processing",     nodeIds: ["lclean_read","lclean_outlier","lclean_drop","lclean_filter","lclean_out"] },
+    { header: "compute_site_statistics.py",  icon: "fa-code",     headerBg: "#1e3a5f", headerClass: "header-processing",     nodeIds: ["lanalyze_read","lanalyze_stats","lanalyze_out"] },
+    { header: "generate_figures.py",  icon: "fa-code",     headerBg: "#5f3b00", headerClass: "header-visualization",  nodeIds: ["lplot_read","lplot_gen","lplot_fig1","lplot_fig2","lplot_fig3","lplot_fig4"] },
+  ];
+  var figIds = { "lplot_fig1":1, "lplot_fig2":1, "lplot_fig3":1, "lplot_fig4":1 };
+
+  function showDetail(node) {
+    document.getElementById("pdetail-title").innerHTML = node.label;
+    document.getElementById("pdetail-type").textContent = node.type.replace("_"," ");
+    var scriptRow = document.getElementById("pdetail-script-row");
+    document.getElementById("pdetail-script").textContent = node.script || "—";
+    scriptRow.style.display = node.script ? "" : "none";
+
+    var riskRow = document.getElementById("pdetail-risk-row");
+    var rationaleRow = document.getElementById("pdetail-rationale-row");
+    var noteRow = document.getElementById("pdetail-note-row");
+    if (node.risk) {
+      riskRow.style.display = "";
+      var rc = node.risk === "critical" ? "#dc2626" : "#f59e0b";
+      document.getElementById("pdetail-risk").innerHTML = '<span class="detail-badge" style="background:' + rc + '22;color:' + rc + ';border:1px solid ' + rc + ';">' + node.risk + '</span>';
+      rationaleRow.style.display = "";
+      document.getElementById("pdetail-rationale").textContent = node.rationale || "—";
+      noteRow.style.display = node.note ? "" : "none";
+      document.getElementById("pdetail-note").textContent = node.note || "";
+    } else {
+      riskRow.style.display = "none";
+      rationaleRow.style.display = "none";
+      noteRow.style.display = "none";
+    }
+    detailEl.classList.add("visible");
+  }
+
+  function buildPipeline() {
+    var html = "";
+    columns.forEach(function (col, ci) {
+      html += '<div class="pipeline-col">';
+      html += '<div class="pipeline-header ' + col.headerClass + '" style="background:' + col.headerBg + ';"><i class="fas ' + col.icon + ' me-1"></i>' + col.header + '</div>';
+      html += '<div class="pipeline-body">';
+
+      var figs = [];
+      var prevWasNode = false;
+      for (var i = 0; i < col.nodeIds.length; i++) {
+        var nid = col.nodeIds[i];
+        var node = lifeNodesMap[nid];
+        if (!node) continue;
+
+        if (figIds[nid]) {
+          figs.push(nid);
+          continue;
+        }
+        if (prevWasNode) html += '<div class="pipeline-node-arrow"></div>';
+        var riskClass = node.risk ? " risk-" + node.risk : "";
+        html += '<div class="pipeline-node type-' + node.type + riskClass + '" data-id="' + node.id + '">' + node.label + '</div>';
+        prevWasNode = true;
+      }
+      if (figs.length > 0) {
+        if (prevWasNode) html += '<div class="pipeline-node-arrow"></div>';
+        html += '<div class="pipeline-fig-grid">';
+        figs.forEach(function (fid) {
+          var fn = lifeNodesMap[fid];
+          if (fn) html += '<div class="pipeline-node type-output" data-id="' + fn.id + '">' + fn.label + '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div></div>';
+      if (ci < columns.length - 1) html += '<div class="pipeline-arrow"></div>';
+    });
+    pipelineEl.innerHTML = html;
+
+    pipelineEl.querySelectorAll(".pipeline-node").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var node = lifeNodesMap[this.dataset.id];
+        if (!node) return;
+        showDetail(node);
+        pipelineEl.querySelectorAll(".pipeline-node").forEach(function (n) { n.style.outline = ""; });
+        this.style.outline = "1px solid rgba(255,255,255,0.35)";
+      });
+    });
+  }
+
+  document.getElementById("pdetail-close").addEventListener("click", function () {
+    detailEl.classList.remove("visible");
+    pipelineEl.querySelectorAll(".pipeline-node").forEach(function (n) { n.style.outline = ""; });
+  });
+
+  buildPipeline();
+
+  document.getElementById("manips").innerHTML = d.lifecycleNodes
+    .filter(function (n) { return n.risk; })
+    .map(function (n) {
+      var color = n.risk === 'critical' ? '#dc2626' : n.risk === 'warn' ? '#f59e0b' : '#34d399';
+      return '<div class="small mb-2 manip-row" style="padding:8px 12px;border-radius:6px;background:rgba(0,0,0,0.18);border-left:3px solid ' + color + ';">'
+        + '<strong>' + n.label + '</strong>'
+        + '<span class="badge ms-1" style="background:rgba(0,0,0,0.25);color:' + color + ';border:1px solid ' + color + ';font-size:0.6rem;">' + n.risk + '</span>'
+        + '<span class="badge ms-1" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:0.6rem;">' + n.rationale + '</span>'
+        + (n.note ? '<div class="text-muted mt-1">' + n.note + '</div>' : '')
+        + '</div>';
+    }).join('') || '<div class="text-success small"><i class="fas fa-check-circle me-1"></i>No flagged manipulations.</div>';
+
+  // Conversation
+  document.getElementById("thread").innerHTML = d.messages.map((msg) => `
+    <div class="msg-bubble ${msg.sender}">
+      <div class="msg-meta"><strong>${msg.name}</strong> · ${msg.date}</div>
+      <div>${msg.body}</div>
+    </div>
+  `).join("");
+});
+</script>
+</body>
+</html>
