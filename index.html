@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciCrypt — Provenance and integrity for the scholarly record</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="home">
+
+<section class="hero" style="padding-bottom:2.5rem;">
+    <div class="container">
+        <img src="assets/img/scicrypt-mark.png" alt="SciCrypt" class="tool-logo tool-logo-80 reveal" style="margin:0 auto 1rem;">
+        <span class="eyebrow reveal">Two tools, one mission</span>
+        <h1 class="reveal">Research you can trust, provenance you can verify.</h1>
+        <p class="lead reveal delay-1">
+            SciTrace captures provenance. SciVerify verifies integrity. Together, they make research trustworthy.
+        </p>
+        <div class="cta-row reveal delay-2">
+            <a href="demo/index.html" class="btn-cta-primary"><i class="fas fa-play me-2"></i>Try the interactive demo</a>
+            <a href="features-scitrace.html" class="btn-cta-secondary">Explore features</a>
+        </div>
+    </div>
+</section>
+
+<section class="container" style="margin-bottom:4rem;">
+    <div class="reveal delay-1" style="max-width:760px;margin:0 auto;">
+        <div class="app-window">
+            <div class="aw-bar"><span class="aw-dot r"></span><span class="aw-dot y"></span><span class="aw-dot g"></span><span class="aw-title">SciCrypt · from raw data to editorial decision</span></div>
+            <div class="aw-body">
+                <div class="aw-pane active">
+                    <div class="aw-tabs"><span class="aw-tab on"><i class="fas fa-share-alt me-1"></i>SciTrace</span><span class="aw-tab">SciVerify</span></div>
+                    <div class="repo-graph" data-auto-run style="padding:0.4rem 0.65rem 0.55rem;">
+                        <div class="rg-canvas" style="height:240px;">
+                            <svg class="rg-edges" viewBox="0 0 160 100" preserveAspectRatio="none">
+                                <path d="M 77 42 C 68 33, 60 25, 54 20"/>
+                                <path d="M 77 42 C 86 33, 93 25, 99 20"/>
+                                <path d="M 77 42 C 86 50, 93 58, 99 64"/>
+                                <path d="M 77 42 C 68 50, 60 58, 54 64"/>
+                                <path d="M 54 20 C 46 16, 34 11, 24 6"/>
+                                <path d="M 99 20 C 108 17, 125 13, 136 12"/>
+                                <path d="M 99 20 C 108 24, 125 26, 136 28"/>
+                            </svg>
+                            <div class="rg-node root" style="left:48%;top:42%;" data-name="river-water-quality" data-type="dataset root">river-water-quality</div>
+                            <div class="rg-node raw" style="left:34%;top:20%;" data-name="raw_data/" data-type="raw data">raw_data/</div>
+                            <div class="rg-node scripts" style="left:62%;top:20%;" data-name="scripts/" data-type="scripts">scripts/</div>
+                            <div class="rg-node results" style="left:62%;top:64%;" data-name="results/" data-type="results">results/</div>
+                            <div class="rg-node plots" style="left:34%;top:64%;" data-name="plots/" data-type="plots">plots/</div>
+                            <div class="rg-node raw" style="left:15%;top:6%;" data-name="river_samples_raw.csv" data-type="raw data">river_samples_raw.csv</div>
+                            <div class="rg-node scripts" style="left:85%;top:12%;" data-run='{"cmd":"SciTrace Run \"python scripts/filter_and_clean_samples.py\"","lines":["Loading raw_data/river_samples_raw.csv …","Applying outlier + range filters …","Writing results/samples_cleaned.csv …"],"created":"results/samples_cleaned.csv","commit":"3f9a1c2"}'>filter_and_clean_samples.py <i class="fas fa-play"></i></div>
+                            <div class="rg-node scripts" style="left:85%;top:28%;" data-run='{"cmd":"SciTrace Run \"python scripts/generate_figures.py\"","lines":["Reading results/samples_cleaned.csv …","Generating PCA.png …"],"created":"plots/PCA.png","commit":"a1c4e8"}'>generate_figures.py <i class="fas fa-play"></i></div>
+                        </div>
+                        <div class="rg-legend" style="margin-top:0.15rem;">
+                            <span><i class="dot root"></i>dataset root</span>
+                            <span><i class="dot raw"></i>raw data</span>
+                            <span><i class="dot scripts"></i>scripts</span>
+                            <span><i class="dot results"></i>results</span>
+                            <span><i class="dot plots"></i>plots</span>
+                        </div>
+                        <div class="rg-panel" data-hide-cycle-complete style="margin-top:0.35rem;"><div class="rg-info"><i class="fas fa-info-circle me-1"></i><strong>Auto-run ready</strong> — scripts will execute in sequence.</div></div>
+                    </div>
+                </div>
+                <div class="aw-pane">
+                    <div class="aw-tabs"><span class="aw-tab">SciTrace</span><span class="aw-tab on"><i class="fas fa-check-circle me-1"></i>SciVerify</span></div>
+                    <div class="mock-checks" style="width:100%;">
+                        <div class="mc-head"><i class="fas fa-shield-alt me-1"></i>Running integrity checks…</div>
+                        <div class="mc-row"><span class="mc-name">Traceability <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(15%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">100</span></div>
+                        <div class="mc-row"><span class="mc-name">Reproducibility <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(25%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">86</span></div>
+                        <div class="mc-row"><span class="mc-name">Manipulation <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(20%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">90</span></div>
+                        <div class="mc-row"><span class="mc-name">AI-text <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(10%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip warn">55</span></div>
+                        <div class="mc-row"><span class="mc-name">References <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(20%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">72</span></div>
+                        <div class="mc-row"><span class="mc-name">Authors <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(10%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">76</span></div>
+                        <div class="mc-aggregate"><span class="lbl">Integrity score</span><span class="val" data-count="82">82</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="aw-progress"><span class="seg on"></span><span class="seg"></span></div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="reveal">Research integrity is eroding.<br>Reproducibility is the first to suffer.</h2>
+        <p class="section-lead reveal">The research ecosystem was never built for the threats it now faces.</p>
+
+        <div class="row g-4">
+            <div class="col-md-4 reveal">
+                <div class="pillar-card" style="border-color: rgba(220,38,38,0.3);">
+                    <div class="icon" style="background: linear-gradient(135deg,#f87171,#dc2626);"><i class="fas fa-industry"></i></div>
+                    <h3>Paper mills at industrial scale</h3>
+                    <p>Automated fabrication factories produce thousands of fake papers monthly. Existing detection tools catch some — but operate in silos, and the scale is growing faster than any single system can handle.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-1">
+                <div class="pillar-card" style="border-color: rgba(245,158,11,0.3);">
+                    <div class="icon" style="background: linear-gradient(135deg,#fbbf24,#d97706);"><i class="fas fa-robot"></i></div>
+                    <h3>AI-written content in submissions</h3>
+                    <p>LLMs generate fluent prose that humans can't reliably distinguish from authentic research. Hallucinated citations, fabricated results, and AI-generated discussion sections slip past peer review undetected.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-2">
+                <div class="pillar-card" style="border-color: rgba(34,197,94,0.3);">
+                    <div class="icon" style="background: linear-gradient(135deg,#22c55e,#059669);"><i class="fas fa-balance-scale"></i></div>
+                    <h3>FAIR mandates from funders</h3>
+                    <p>DFG, ERC, and NIH now require data to be findable, accessible, interoperable, and reusable for a decade. Most labs lack the infrastructure to comply — and reviewers have no way to verify.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-band" style="background: rgba(0,0,0,0.15);">
+    <div class="container">
+        <h2 class="reveal">Two tools, one integrity chain.</h2>
+        <p class="section-lead reveal">One tool tracks where every result came from.<br>The other turns it into an integrity signal editors can trust.<br>Together, they form a continuous integrity chain.</p>
+
+        <div class="pillar-grid">
+            <div class="pillar-card scitrace reveal">
+                <img src="assets/img/scitrace-logo.png" alt="SciTrace" class="tool-logo tool-logo-48" style="margin-bottom:1rem;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="oss-badge">Open source</span>
+                </div>
+                <h3>SciTrace · for researchers</h3>
+                <p>A native Git + git-annex dataflow with a standard layout (raw_data, scripts, results, plots). Every script run gets recorded as a provenance commit. Vis.js shows you the lineage. FAIR by construction. Produces a verifiable provenance package that SciVerify uses to score integrity — open source, self-hostable, your data, your machine.</p>
+                <a class="pillar-link" href="features-scitrace.html">SciTrace features →</a>
+                <a class="pillar-link ms-3" href="demo/scitrace/dataflow-view.html">See it in the demo →</a>
+            </div>
+            <div class="pillar-card sciverify reveal delay-1">
+                <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-56" style="margin-bottom:1rem;">
+                <h3>SciVerify · for editorial integrity</h3>
+                <p>Consumes the SciTrace provenance package and runs automated checks: references against Crossref, AI-text indicators across every section, authors against OpenAlex, and dataflow scored on traceability, reproducibility, and manipulation transparency. Editors see one integrity number, with the full evidence one click away.</p>
+                <a class="pillar-link" href="features-sciverify.html">SciVerify features →</a>
+                <a class="pillar-link ms-3" href="demo/sciverify/editor/dashboard.html">See it in the demo →</a>
+            </div>
+        </div>
+        <p class="text-center mt-3 reveal" style="color: rgba(255,255,255,0.45); font-size: 0.85rem;">The integration is seamless — provenance captured in the lab flows directly into the editorial integrity check.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="reveal">Built for everyone in the editorial pipeline.</h2>
+        <p class="section-lead reveal">Each role sees the part of the story that matters to them.</p>
+
+        <div class="role-grid">
+            <a class="role-tile reveal" href="for-researchers.html">
+                <div class="role-icon"><i class="fas fa-flask"></i></div>
+                <h4>Researchers</h4>
+                <p>Capture provenance as you go. Submit with a verifiable integrity score already attached.</p>
+            </a>
+            <a class="role-tile reveal delay-1" href="for-editors.html">
+                <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+                <h4>Editors</h4>
+                <p>Every submission arrives pre-checked. One screen for references, AI signals, authors, data integrity.</p>
+            </a>
+            <a class="role-tile reveal delay-2" href="for-reviewers.html">
+                <div class="role-icon"><i class="fas fa-glasses"></i></div>
+                <h4>Reviewers</h4>
+                <p>See the linked dataflow graph alongside the manuscript. Private structured threads with the editor.</p>
+            </a>
+            <a class="role-tile reveal delay-3" href="for-publishers.html">
+                <div class="role-icon"><i class="fas fa-building"></i></div>
+                <h4>Publishers &amp; institutions</h4>
+                <p>A defensive layer against paper mills, fabricated figures, and AI-written submissions.</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="text-align:center;">
+        <h2 class="reveal">See it for yourself.</h2>
+        <p class="section-lead reveal">The demo gives you the full researcher → editor → reviewer experience. No signup. No real data. Uploads are ignored.</p>
+        <a href="demo/index.html" class="btn-cta-primary reveal" style="font-size:1.05rem;"><i class="fas fa-play me-2"></i>Open the demo</a>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>
