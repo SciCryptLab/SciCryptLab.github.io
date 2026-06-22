@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Try the SciCrypt demo</title>
+    <link rel="icon" type="image/png" href="../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../assets/css/chrome.css" rel="stylesheet">
+    <link href="../assets/css/site.css" rel="stylesheet">
+    <style>
+      .role-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+      .role-pick-card {
+        background: rgba(17,24,39,0.6); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 1.25rem; padding: 2rem;
+        transition: transform 0.2s, border-color 0.2s; cursor: pointer;
+        backdrop-filter: blur(20px); text-decoration: none; color: inherit;
+        display: block;
+      }
+      .role-pick-card:hover { transform: translateY(-4px); border-color: rgba(37,99,235,0.5); color: inherit; }
+      .role-pick-card .role-glyph {
+        width: 64px; height: 64px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.7rem; color: white; margin-bottom: 1.25rem;
+      }
+      .role-pick-card.author .role-glyph { background: linear-gradient(135deg,#22c55e,#06b6d4); }
+      .role-pick-card.editor .role-glyph { background: linear-gradient(135deg,#2563eb,#a78bfa); }
+      .role-pick-card.reviewer .role-glyph { background: linear-gradient(135deg,#f59e0b,#dc2626); }
+      .role-pick-card h3 { color: white; font-weight: 700; margin: 0 0 0.5rem; }
+      .role-pick-card .role-username { font-family: var(--bs-font-monospace); color: #93c5fd; font-size: 0.85rem; margin-bottom: 1rem; }
+      .role-pick-card p { color: rgba(255,255,255,0.7); margin: 0 0 1.25rem; line-height: 1.55; font-size: 0.92rem; }
+      .role-pick-card .role-screens { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+      .role-pick-card .role-screens span { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; }
+    </style>
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing">
+
+<nav class="marketing-nav">
+    <div class="container">
+        <a class="brand-wm" href="../index.html"><span class="brand-text">Sci</span><span class="brand-dot">Crypt</span></a>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="../for-researchers.html">For researchers</a>
+            <a href="../for-editors.html">For editors</a>
+            <a href="portal/login.html" class="demo-cta">Sign in →</a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container">
+        <span class="eyebrow">Interactive demo</span>
+        <h1>Pick a role to start.</h1>
+        <p class="lead">Every screen is the same one the real apps render — same templates, same styling, same data shapes. No real manuscripts. Any file you "upload" will be ignored and replaced by a fixed sample manuscript.</p>
+    </div>
+</section>
+
+<section class="section" style="padding-top:1rem;">
+    <div class="container">
+        <div class="role-pick">
+            <a class="role-pick-card author" href="javascript:demoLoginAs('author')">
+                <div class="role-glyph"><i class="fas fa-flask"></i></div>
+                <h3>Author / researcher</h3>
+                <div class="role-username">alex-chen</div>
+                <p>Start at Portal, jump into SciTrace to create a dataflow, then submit through SciVerify's 6-step wizard and see your integrity score before sending.</p>
+                <div class="role-screens"><span>Portal</span><span>SciTrace</span><span>6-step wizard</span><span>Integrity ring</span></div>
+            </a>
+            <a class="role-pick-card editor" href="javascript:demoLoginAs('editor')">
+                <div class="role-glyph"><i class="fas fa-user-tie"></i></div>
+                <h3>Editor</h3>
+                <div class="role-username">maria-torres</div>
+                <p>Land on the editor dashboard, open the pre-checked demo submission, switch through Integrity, References, AI Detection, Authors, and the Conversation tab.</p>
+                <div class="role-screens"><span>Dashboard</span><span>5 review tabs</span><span>Re-run</span></div>
+            </a>
+            <a class="role-pick-card reviewer" href="javascript:demoLoginAs('reviewer')">
+                <div class="role-glyph"><i class="fas fa-glasses"></i></div>
+                <h3>Reviewer</h3>
+                <div class="role-username">james-park</div>
+                <p>See your queued assignment, switch into the Data Lifecycle tab to inspect the linked dataflow graph, post a private comment to the editor, file your recommendation.</p>
+                <div class="role-screens"><span>Reviewer dashboard</span><span>Data lifecycle</span><span>Private thread</span></div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container"><div>&copy; 2026 SciCrypt — Synthetic data only.</div><div><a href="../index.html">Home</a></div></div>
+</footer>
+<script src="../assets/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+  // Add theme toggle to hardcoded nav
+  document.addEventListener("DOMContentLoaded", function () {
+    var container = document.querySelector(".marketing-nav .container");
+    if (container && !container.querySelector(".theme-toggle-btn")) {
+      var btn = document.createElement("button");
+      btn.className = "theme-toggle-btn";
+      btn.title = "Switch theme";
+      btn.style.cssText = "background:none;border:1px solid rgba(255,255,255,0.15);color:inherit;cursor:pointer;padding:0.45rem 0.65rem;border-radius:0.5rem;font-size:0.95rem;";
+      var t = localStorage.getItem("theme") || "dark";
+      btn.innerHTML = t === "light" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      btn.addEventListener("click", function () {
+        var t = localStorage.getItem("theme") || "dark";
+        var n = t === "dark" ? "light" : "dark";
+        localStorage.setItem("theme", n);
+        document.body.classList.toggle("theme-light", n === "light");
+        document.documentElement.classList.toggle("theme-light", n === "light");
+        setTimeout(function () {
+          if (window.scicryptTheme) { window.scicryptTheme.init(); window.scicryptTheme.apply(n); }
+        }, 30);
+      });
+      var navLinks = container.querySelector(".nav-links");
+      if (navLinks) navLinks.appendChild(btn);
+      else container.appendChild(btn);
+    }
+    // Apply saved theme
+    if (window.scicryptTheme) window.scicryptTheme.init();
+    else {
+      var t = localStorage.getItem("theme") || "dark";
+      document.body.classList.toggle("theme-light", t === "light");
+      document.documentElement.classList.toggle("theme-light", t === "light");
+    }
+  });
+})();
+</script>
+<script>
+window.demoChrome = { demoUrl: (p) => "../demo/" + p };
+function demoLoginAs(role) {
+  sessionStorage.setItem("demoRole", role);
+  window.location.href = "portal/dashboard.html";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings · SciCrypt Portal</title>
+    <link rel="icon" type="image/png" href="../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/chrome.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="portal" data-active="settings">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+    <div class="page-heading"><h1>Settings</h1><p>Personal preferences. Saved to your browser.</p></div>
+
+    <div class="card shadow-sm" style="max-width: 700px;">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-palette me-2 text-info"></i>Appearance</h5></div>
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Theme</strong>
+                    <div class="small text-muted">Dark glass mode is the default. Light mode is currently experimental.</div>
+                </div>
+                <button class="btn btn-outline-secondary theme-toggle-btn" id="theme-btn"><i class="fas fa-moon me-1"></i>Dark</button>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/demo-router.js"></script>
+<script>
+// Sync settings page theme button with shared theme module
+(function () {
+  function updateBtn() {
+    var t = localStorage.getItem("theme") || "dark";
+    var btn = document.getElementById("theme-btn");
+    if (!btn) return;
+    var ns = t === "light"
+      ? '<i class="fas fa-sun me-1"></i>Light'
+      : '<i class="fas fa-moon me-1"></i>Dark';
+    btn.innerHTML = ns;
+  }
+  document.addEventListener("DOMContentLoaded", function () {
+    updateBtn();
+    var btn = document.getElementById("theme-btn");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        var cur = localStorage.getItem("theme") || "dark";
+        var next = cur === "dark" ? "light" : "dark";
+        localStorage.setItem("theme", next);
+        document.body.classList.toggle("theme-light", next === "light");
+        document.documentElement.classList.toggle("theme-light", next === "light");
+        updateBtn();
+        setTimeout(function () {
+          if (window.scicryptTheme) { window.scicryptTheme.init(); window.scicryptTheme.apply(next); }
+        }, 30);
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>
