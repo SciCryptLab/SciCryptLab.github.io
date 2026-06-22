@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciVerify — editorial integrity · SciCrypt</title>
+    <link rel="icon" type="image/png" href="assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/chrome.css" rel="stylesheet">
+    <link href="assets/css/site.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass marketing" data-nav="features">
+
+<section class="container">
+    <div class="role-hero">
+        <div class="reveal">
+            <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-72" style="margin-bottom:1rem;">
+            <div class="role-eyebrow">SciVerify</div>
+            <h1>Every submission, pre-checked before it hits the queue.</h1>
+            <p>SciVerify runs the integrity work no human could do at scale: references against Crossref, AI-text indicators across every section, authors against OpenAlex, and the linked dataflow scored on traceability, reproducibility and manipulation transparency. One integrity number, full evidence one click away.</p>
+            <div class="cta-row" style="justify-content:flex-start;">
+                <a href="demo/sciverify/editor/dashboard.html" class="btn-cta-primary"><i class="fas fa-play me-2"></i>Open the SciVerify demo</a>
+                <a href="for-editors.html" class="btn-cta-secondary">For editors</a>
+            </div>
+        </div>
+        <div class="role-hero-mock reveal delay-1">
+            <div class="scitrace-carousel">
+                <div class="sc-tabs">
+                    <button class="sc-tab active" data-pane="0"><i class="fas fa-shield-alt"></i><span>Integrity checks</span></button>
+                    <button class="sc-tab" data-pane="1"><i class="fas fa-magic"></i><span>Manipulation</span></button>
+                    <button class="sc-tab" data-pane="2"><i class="fas fa-link"></i><span>References</span></button>
+                </div>
+                <div class="sc-panes">
+                    <!-- pane 0: Integrity checks -->
+                    <div class="sc-pane active">
+                        <div class="mock-checks" style="width:100%;">
+                            <div class="mc-head"><i class="fas fa-shield-alt me-1"></i>Running integrity checks…</div>
+                            <div class="mc-row"><span class="mc-name">Traceability <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(15%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">100</span></div>
+                            <div class="mc-row"><span class="mc-name">Reproducibility <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(25%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">86</span></div>
+                            <div class="mc-row"><span class="mc-name">Manipulation <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(20%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">90</span></div>
+                            <div class="mc-row"><span class="mc-name">AI-text <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(10%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip warn">55</span></div>
+                            <div class="mc-row"><span class="mc-name">References <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(20%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">72</span></div>
+                            <div class="mc-row"><span class="mc-name">Authors <span style="color:rgba(255,255,255,0.35);font-size:0.75rem;">(10%)</span></span><span class="mc-status"><i class="fas fa-spinner mc-spin"></i></span><span class="mc-chip pass">76</span></div>
+                            <div class="mc-aggregate"><span class="lbl">Integrity score</span><span class="val" data-count="82">82</span></div>
+                        </div>
+                    </div>
+                    <!-- pane 1: Manipulation detection -->
+                    <div class="sc-pane">
+                        <div class="mock-checks" style="width:100%;">
+                            <div class="mc-head"><i class="fas fa-magic me-1"></i>Lifecycle analysis · compute_site_statistics.py</div>
+                            <div class="mc-row done"><span class="mc-name">Filtering · documented</span><span class="mc-chip pass">Info</span></div>
+                            <div class="mc-row done"><span class="mc-name">Aggregation · documented</span><span class="mc-chip pass">Info</span></div>
+                            <div class="mc-row done"><span class="mc-name">Outlier removal · undocumented</span><span class="mc-chip warn">Warn</span></div>
+                            <div class="mc-row done"><span class="mc-name">Rescaling without justification</span><span class="mc-chip fail">Critical</span></div>
+                        </div>
+                    </div>
+                    <!-- pane 2: Reference validation -->
+                    <div class="sc-pane">
+                        <div class="mock-inbox" style="width:100%;">
+                            <div class="inbox-header"><i class="fas fa-link me-1"></i>References · Crossref check</div>
+                            <div class="inbox-row"><div class="row-title">Anderson et al., 2021 <span class="row-meta">· DOI resolves</span></div><div class="row-score score-good">96</div></div>
+                            <div class="inbox-row"><div class="row-title">Patel &amp; Wu, 2020 <span class="row-meta">· year mismatch</span></div><div class="row-score score-warn">58</div></div>
+                            <div class="inbox-row"><div class="row-title">Smith et al., 2019 <span class="row-meta">· DOI not found</span></div><div class="row-score score-bad">0</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sc-progress">
+                    <span class="sc-dot active"></span>
+                    <span class="sc-dot"></span>
+                    <span class="sc-dot"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container" style="max-width:900px;">
+        <h2 class="reveal">One integrity number. All of the evidence.</h2>
+        <p class="section-lead reveal">The integrity score combines six weighted signals. Each is explainable, re-runnable.</p>
+        <div class="score-formula reveal">
+            <div class="sf-cell"><div class="sf-weight">15%</div><div class="sf-name">Traceability</div><div class="sf-bar"></div></div>
+            <div class="sf-cell"><div class="sf-weight">25%</div><div class="sf-name">Reproducibility</div><div class="sf-bar"></div></div>
+            <div class="sf-cell"><div class="sf-weight">20%</div><div class="sf-name">Manipulation</div><div class="sf-bar"></div></div>
+            <div class="sf-cell"><div class="sf-weight">10%</div><div class="sf-name">AI Detection</div><div class="sf-bar"></div></div>
+            <div class="sf-cell"><div class="sf-weight">20%</div><div class="sf-name">References</div><div class="sf-bar"></div></div>
+            <div class="sf-cell"><div class="sf-weight">10%</div><div class="sf-name">Authors</div><div class="sf-bar"></div></div>
+        </div>
+        <p class="reveal" style="text-align:center;color:rgba(255,255,255,0.5);font-size:0.85rem;">Banded <span style="color:#f87171;font-weight:700;">red &lt; 40</span> · <span style="color:#fbbf24;font-weight:700;">amber 40–69</span> · <span style="color:#34d399;font-weight:700;">green ≥ 70</span></p>
+
+        <h2 class="reveal mt-5">What each signal measures</h2>
+        <ul class="bullet-list reveal">
+            <li><strong>Traceability (15%).</strong> Files are tracked and clean rather than untracked or modified out from under their history.</li>
+            <li><strong>Reproducibility (25%).</strong> The history contains <code>[SciTrace:Run]</code> records with inputs and scripts present and outputs not hand-edited. An opt-in <em>deep</em> check re-executes the recorded command and byte-compares the outputs — cached, with auto-invalidation when scripts or inputs change.</li>
+            <li><strong>Manipulation transparency (20%).</strong> Undocumented and high-risk data transforms cost points; documented, routine ones don't.</li>
+            <li><strong>AI-text detection (10%).</strong> SciVerify scans every IMRaD section for 15 heuristic indicators of LLM authorship. The inverted score (100 − AI-likeness) feeds the integrity formula: the more human the text reads, the higher the contribution.</li>
+            <li><strong>Reference validation (20%).</strong> Each reference is resolved against Crossref and scored on five signals — author, title, year, journal, volume. The average across all references feeds the formula. Mismatched or unresolvable DOIs pull the score down.</li>
+            <li><strong>Author verification (10%).</strong> Every listed author is checked against OpenAlex for existence, ORCID linkage, and topical field-match. The average across authors feeds the formula. Unverifiable or mismatched authors cost points.</li>
+        </ul>
+    </div>
+</section>
+
+<section class="section section-band" style="background: rgba(0,0,0,0.15);">
+    <div class="container">
+        <h2 class="reveal">Everything SciVerify does.</h2>
+        <p class="section-lead reveal">Deterministic checks where the answer is provable, semantic ones where judgement is needed — the right tool per signal.</p>
+        <div class="feature-cards" style="grid-template-columns: repeat(3, 1fr);">
+            <a class="feature-card sv reveal delay-1" href="feature-traceability-reproducibility.html">
+                <div class="fc-icon"><i class="fas fa-code-branch"></i></div>
+                <h4>Traceability &amp; Reproducibility</h4>
+                <p>Git-tracked files plus [SciTrace:Run] provenance commits scored per figure — 40% of the integrity score.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card sv reveal delay-2" href="feature-ai-text-detection.html">
+                <div class="fc-icon"><i class="fas fa-robot"></i></div>
+                <h4>AI-text detection</h4>
+                <p>15 heuristic indicators across IMRaD sections — chatbot leaks, tortured phrasing, hallucinated citations, cadence anomalies — with the trigger words highlighted.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card sv reveal" href="feature-reference-validation.html">
+                <div class="fc-icon"><i class="fas fa-link"></i></div>
+                <h4>Reference validation</h4>
+                <p>Every DOI resolved against Crossref and scored on five signals. Fabricated and mismatched references surface immediately.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card sv reveal delay-1" href="feature-author-verification.html">
+                <div class="fc-icon"><i class="fas fa-user-check"></i></div>
+                <h4>Author verification</h4>
+                <p>Each author checked against OpenAlex for existence, ORCID linkage and topical overlap. Ghost authors and identity fraud surface.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+            <a class="feature-card sv reveal delay-2" href="feature-manipulation-detection.html">
+                <div class="fc-icon"><i class="fas fa-magic"></i></div>
+                <h4>Manipulation detection</h4>
+                <p>Local LLM analysis flags data transformations across 11 categories with risk levels — undocumented or high-risk steps light up orange and red in the graph.</p>
+                <span class="fc-arrow">Learn more →</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="text-align:center;">
+    <div class="container">
+        <h2 class="reveal">See the evidence, not a black-box number.</h2>
+        <p class="section-lead reveal">Every flag links straight to the payload behind it — the Crossref record, the highlighted passage, the OpenAlex profile, the provenance commit.</p>
+        <a href="demo/sciverify/editor/dashboard.html" class="btn-cta-primary reveal"><i class="fas fa-play me-2"></i>Explore SciVerify in the demo</a>
+    </div>
+</section>
+
+<script src="assets/js/marketing.js"></script>
+</body>
+</html>
