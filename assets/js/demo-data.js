@@ -593,7 +593,7 @@ window.DEMO = (function () {
   // the primary row is immediately visible in the "rejected" tile.
   const editorQueueStatusCounts = editorQueue.reduce((a, r) => { a[r.status] = (a[r.status] || 0) + 1; return a; }, {});
   const editorStats = {
-    total: 12,
+    total: editorQueue.length,
     pending: editorQueueStatusCounts.submitted || 0,
     accepted: editorQueueStatusCounts.accepted || 0,
     rejected: editorQueueStatusCounts.rejected || 0,
