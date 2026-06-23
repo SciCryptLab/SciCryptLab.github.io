@@ -38,7 +38,7 @@
         <div class="welcome-avatar">E</div>
         <div class="welcome-text">
             <h2>Welcome back, Maria Torres</h2>
-            <p>3 submissions are pending your review. The integrity scores are already computed.</p>
+            <p><span id="pending-count">…</span> submissions are pending your review. The integrity scores are already computed.</p>
         </div>
     </div>
 
@@ -89,6 +89,10 @@
 document.addEventListener("DOMContentLoaded", function () {
   const d = window.DEMO;
   const s = d.editorStats;
+
+  // Dynamic welcome banner
+  document.getElementById("pending-count").textContent = s.pending;
+
   const statCard = (label, value, icon, bg) => `<div class="col-md col-6"><div class="stat-card d-flex justify-content-between align-items-center">
     <div><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>
     <div class="stat-icon" style="background:${bg};"><i class="fas ${icon}"></i></div>
@@ -96,37 +100,58 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("stats-row").innerHTML = [
     statCard("Total received", s.total, "fa-inbox", "linear-gradient(135deg,#2563eb,#06b6d4)"),
     statCard("Pending review", s.pending, "fa-clock", "linear-gradient(135deg,#f59e0b,#dc2626)"),
+    statCard("In revision", s.revision, "fa-pen-alt", "linear-gradient(135deg,#f59e0b,#06b6d4)"),
     statCard("Accepted", s.accepted, "fa-check-circle", "linear-gradient(135deg,#059669,#22c55e)"),
     statCard("Rejected", s.rejected, "fa-times-circle", "linear-gradient(135deg,#6b7280,#dc2626)"),
     statCard("Avg integrity", s.avg_integrity + "%", "fa-shield-alt", "linear-gradient(135deg,#6366f1,#22c55e)"),
   ].join("");
 
   const statusBadge = (st) => ({
-    submitted: '<span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">submitted</span>',
-    revision: '<span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">in revision</span>',
-    accepted: '<span class="badge" style="background:rgba(5,150,105,0.18);color:#34d399;border:1px solid rgba(5,150,105,0.35);">accepted</span>',
-    rejected: '<span class="badge" style="background:rgba(220,38,38,0.22);color:#fca5a5;border:1px solid rgba(220,38,38,0.45);">rejected</span>',
+    submitted: '<span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">Pending</span>',
+    revision: '<span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">In revision</span>',
+    accepted: '<span class="badge" style="background:rgba(5,150,105,0.18);color:#34d399;border:1px solid rgba(5,150,105,0.35);">Decided</span>',
+    rejected: '<span class="badge" style="background:rgba(220,38,38,0.22);color:#fca5a5;border:1px solid rgba(220,38,38,0.45);">Decided</span>',
   }[st] || st);
   const integrityBadge = (n) => {
     const c = n >= 70 ? "#34d399" : n >= 40 ? "#fbbf24" : "#f87171";
     return `<strong style="color:${c};">${n}</strong>`;
   };
 
-  document.getElementById("queue").innerHTML = d.editorQueue.map((r) => `
-    <tr>
-      <td><div style="font-weight:600;color:white;">${r.title}</div></td>
-      <td>${r.journal}</td>
-      <td>${statusBadge(r.status)}</td>
-      <td>${r.submitted_at}</td>
-      <td class="text-center">${r.reviewers}</td>
-      <td class="text-center">${integrityBadge(r.integrity)}</td>
-      <td class="text-end">
-        ${r.primary
-          ? `<a href="submission-review.html" class="btn btn-sm btn-primary"><i class="fas fa-eye me-1"></i>Review</a>`
-          : `<button class="btn btn-sm btn-outline-secondary" disabled title="Only the highlighted submission opens"><i class="fas fa-eye me-1"></i>Review</button>`}
-      </td>
-    </tr>
-  `).join("");
+  function renderQueue(filter) {
+    var rows = d.editorQueue;
+    if (filter === "pending") rows = rows.filter(function (r) { return r.status === "submitted"; });
+    else if (filter === "revision") rows = rows.filter(function (r) { return r.status === "revision"; });
+    else if (filter === "decided") rows = rows.filter(function (r) { return r.status === "accepted" || r.status === "rejected"; });
+    document.getElementById("queue").innerHTML = rows.map(function (r) {
+      return '<tr>' +
+        '<td><div style="font-weight:600;color:white;">' + r.title + '</div></td>' +
+        '<td>' + r.journal + '</td>' +
+        '<td>' + statusBadge(r.status) + '</td>' +
+        '<td>' + r.submitted_at + '</td>' +
+        '<td class="text-center">' + r.reviewers + '</td>' +
+        '<td class="text-center">' + integrityBadge(r.integrity) + '</td>' +
+        '<td class="text-end">' +
+          (r.primary
+            ? '<a href="submission-review.html" class="btn btn-sm btn-primary"><i class="fas fa-eye me-1"></i>Review</a>'
+            : '<button class="btn btn-sm btn-outline-secondary" disabled title="Only the highlighted submission opens"><i class="fas fa-eye me-1"></i>Review</button>') +
+        '</td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  // Wire filter buttons
+  var filterBtns = document.querySelectorAll(".card-header .btn-group button");
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      filterBtns.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      var filter = btn.textContent.trim().toLowerCase().replace(/ /g, "");
+      if (filter === "inrevision") filter = "revision";
+      renderQueue(filter === "all" ? null : filter);
+    });
+  });
+
+  renderQueue(null);
 });
 </script>
 </body>
