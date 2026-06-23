@@ -107,6 +107,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../assets/js/chrome.js"></script>
+<script src="../../assets/js/demo-data.js"></script>
 <script src="../../assets/js/demo-router.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -118,14 +119,15 @@ document.addEventListener("DOMContentLoaded", function () {
   // SciTrace tile only for author per role gating
   if (role !== "author") document.getElementById("scitrace-tile").style.display = "none";
 
-  // SciVerify stats
+  // SciVerify stats — dynamic from demo-data
+  const es = window.DEMO && window.DEMO.editorStats;
   const stats = role === "editor"
-    ? `<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">12</span> Submissions</div>
-       <div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">3</span> Pending review</div>`
+    ? '<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">' + (es ? es.total : 5) + '</span> Submissions</div>' +
+      '<div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">' + (es ? es.pending : 2) + '</span> Pending review</div>'
     : role === "reviewer"
-      ? `<div class="stat-pill"><i class="fas fa-glasses" style="color:#a78bfa;"></i> <span class="stat-num">4</span> Assignments</div>
-         <div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">1</span> Pending</div>`
-      : `<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">3</span> Submissions</div>`;
+      ? '<div class="stat-pill"><i class="fas fa-glasses" style="color:#a78bfa;"></i> <span class="stat-num">4</span> Assignments</div>' +
+        '<div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">1</span> Pending</div>'
+      : '<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">3</span> Submissions</div>';
   document.getElementById("sv-stats").innerHTML = stats;
 });
 </script>
