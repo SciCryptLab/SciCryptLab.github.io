@@ -232,8 +232,8 @@
 
     <ul class="nav nav-tabs mb-3 flex-nowrap" role="tablist" style="overflow-x:auto;flex-wrap:nowrap;">
         <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#repo-tab" type="button"><i class="fas fa-folder-tree me-1"></i>Repo View</button></li>
-        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lifecycle-tab" type="button"><i class="fas fa-project-diagram me-1"></i>Data Lifecycle</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#git-tab" type="button"><i class="fas fa-history me-1"></i>Git Log</button></li>
+        <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lifecycle-tab" type="button"><i class="fas fa-project-diagram me-1"></i>Data Lifecycle</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit-tab" type="button"><i class="fas fa-pen me-1"></i>Edit Dataflow</button></li>
     </ul>
 
@@ -281,6 +281,32 @@
             </div>
         </div>
 
+        <!-- GIT LOG -->
+        <div class="tab-pane fade" id="git-tab" role="tabpanel">
+            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: first, run the scripts in the <strong>Repo View</strong> to produce <strong>SciTrace Run</strong> commits — they will appear here. Click a commit to inspect its diff and metadata, then use <strong>Push</strong> to sync them to the remote when ready.</div></div>
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-history me-2 text-info"></i>Commits</h6>
+                            <div class="d-flex" style="gap:0.5rem;">
+                                <button class="btn btn-sm btn-outline-primary" id="btn-pull"><i class="fas fa-arrow-down me-1"></i>Pull</button>
+                                <button class="btn btn-sm btn-outline-danger" id="btn-push"><i class="fas fa-arrow-up me-1"></i>Push</button>
+                                <button class="btn btn-sm btn-outline-warning" id="btn-restore" disabled><i class="fas fa-undo me-1"></i>Restore</button>
+                            </div>
+                        </div>
+                        <div class="card-body" id="commit-list" style="padding:0.75rem;"></div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><h6 class="mb-0" id="commit-title"><i class="fas fa-info-circle me-2 text-info"></i>Commit details</h6></div>
+                        <div class="card-body" id="commit-detail"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- LIFECYCLE -->
         <div class="tab-pane fade" id="lifecycle-tab" role="tabpanel">
             <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: click any <strong>pipeline node</strong> to see its details (type, script, risk). The data flows from raw data → processing → visualization → output.</div></div>
@@ -316,32 +342,6 @@
             <div class="card shadow-sm">
                 <div class="card-header"><h6 class="mb-0"><i class="fas fa-flag me-2 text-warning"></i>Manipulations classified</h6></div>
                 <div class="card-body" id="manips"></div>
-            </div>
-        </div>
-
-        <!-- GIT LOG -->
-        <div class="tab-pane fade" id="git-tab" role="tabpanel">
-            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: click a <strong>commit</strong> on the left to view its diff and metadata on the right. Commits tagged <code>[SciTrace:Run]</code> mark script executions — inspect them to see exactly what ran.</div></div>
-            <div class="row g-3">
-                <div class="col-md-5">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="fas fa-history me-2 text-info"></i>Commits</h6>
-                            <div class="d-flex" style="gap:0.5rem;">
-                                <button class="btn btn-sm btn-outline-primary" id="btn-pull"><i class="fas fa-arrow-down me-1"></i>Pull</button>
-                                <button class="btn btn-sm btn-outline-danger" id="btn-push"><i class="fas fa-arrow-up me-1"></i>Push</button>
-                                <button class="btn btn-sm btn-outline-warning" id="btn-restore" disabled><i class="fas fa-undo me-1"></i>Restore</button>
-                            </div>
-                        </div>
-                        <div class="card-body" id="commit-list" style="padding:0.75rem;"></div>
-                    </div>
-                </div>
-                <div class="col-md-7">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header"><h6 class="mb-0" id="commit-title"><i class="fas fa-info-circle me-2 text-info"></i>Commit details</h6></div>
-                        <div class="card-body" id="commit-detail"></div>
-                    </div>
-                </div>
             </div>
         </div>
 
