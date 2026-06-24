@@ -304,8 +304,10 @@ window.DEMO = (function () {
     const density = weight / Math.max(1, section.word_count / 100);
     const base = Math.max(0, Math.min(100, Math.round(density * 18)));
     const biased = Math.max(0, Math.min(100, base + (AI_SECTION_BIAS[section.name] || 0)));
-    const band = biased >= 70 ? "fail" : biased >= 40 ? "partial" : "pass";
-    return { score: biased, band };
+    // Flip: higher = more human (matching the Integrity-tab convention)
+    const human = 100 - biased;
+    const band = human < 40 ? "fail" : human < 70 ? "partial" : "pass";
+    return { score: human, band };
   }
   const aiSectionsRaw = [
     { name: "Abstract", word_count: 188, indicator_hits: ["focal_vocab"] },
@@ -327,12 +329,9 @@ window.DEMO = (function () {
     { section: "Introduction", indicator: "meta_discourse", severity: "low", text: "It is important to note that, in this paper, we will explore in detail the rich dynamics of river systems and provide a comprehensive overview.", hl_start: 220, hl_end: 360, note: "Generic meta-discourse pattern often produced by LLMs." },
   ];
 
-  // A `critical` finding anywhere in `aiFlagged` is a manuscript-rejection signal:
-  // a leaked LLM assistant prefix means the text is unpublishable regardless of
-  // how clean the rest of the manuscript is. The per-section score is floored by
-  // the worst severity present in that section, and a global ceiling caps the
-  // AI integrity contribution at 25 so the dashboard cannot absorb the failure
-  // into a green headline.
+  // Higher = more human. A `critical` finding floors the section score (via
+  // AI_SECTION_SEVERITY_PENALTY) and a global ceiling caps the AI integrity
+  // contribution at 25 so the dashboard cannot absorb the failure.
   const AI_SECTION_SEVERITY_PENALTY = { critical: 0.0, high: 0.7, medium: 0.9, low: 1.0 };
   function aiSectionSeverityFloor(sectionName) {
     const flags = aiFlagged.filter((f) => f.section === sectionName);
@@ -343,15 +342,18 @@ window.DEMO = (function () {
     const floor = aiSectionSeverityFloor(s.name);
     if (floor < 1.0) {
       s.score = Math.round(s.score * floor);
-      s.band = s.score >= 70 ? "fail" : s.score >= 40 ? "partial" : "fail";
+      s.band = s.score < 40 ? "fail" : s.score < 70 ? "partial" : "pass";
       if (s.score === 0) s.band = "fail";
     }
   });
-  const aiOverall = Math.round(aiSections.reduce((acc, s) => acc + s.score * s.word_count, 0) / aiSections.reduce((acc, s) => acc + s.word_count, 0));
+  const aiOverallRaw = Math.round(aiSections.reduce((acc, s) => acc + s.score * s.word_count, 0) / aiSections.reduce((acc, s) => acc + s.word_count, 0));
+  // Critical AI finding (chatbot-leak) caps the overall at 25 (red band).
+  const hasCriticalAiFinding = aiFlagged.some((f) => f.severity === "critical");
+  const aiOverall = hasCriticalAiFinding ? Math.min(aiOverallRaw, 25) : aiOverallRaw;
   const aiIndicatorCounts = {
     chatbot_leak: 1, tortured_phrases: 1, hallucinated_citation: 1, topical_drift: 1,
     internal_inconsistency: 1, meta_discourse: 2, cadence: 2, focal_vocab: 7,
-    generic_templates: 1, _scoring_version: "v8",
+    generic_templates: 1, _scoring_version: "v9",
   };
 
   // Data verification — findings are the single source of truth.
@@ -494,15 +496,9 @@ window.DEMO = (function () {
     authors.reduce((a, au) => a + (au.openalex.existence * 0.40 + au.openalex.linkage * 0.30 + au.openalex.field_match * 0.30), 0) / authors.length
   );
 
-  // Hard ceiling: if any `critical` AI finding exists, the AI dimension is
-  // capped at 25 (red band) — the manuscript is treated as AI-generated and
-  // is not eligible for publication regardless of how clean the rest is.
-  const CRITICAL_AI_INTEGRITY_CEILING = 25;
-  const hasCriticalAiFinding = aiFlagged.some((f) => f.severity === "critical");
-  const aiIntegrityScoreRaw = Math.max(0, 100 - aiOverall);
-  const aiIntegrityScore = hasCriticalAiFinding
-    ? Math.min(aiIntegrityScoreRaw, CRITICAL_AI_INTEGRITY_CEILING)
-    : aiIntegrityScoreRaw;
+  // aiOverall is already on the human-score scale (higher = more human)
+  // and is capped at 25 when a critical AI finding exists (see above).
+  const aiIntegrityScore = aiOverall;
 
   // Headline integrity. Any `critical` finding in the manuscript (AI, traceability,
   // reproducibility, or manipulation) caps the score at 30 — the submission is
