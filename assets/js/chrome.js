@@ -209,6 +209,39 @@
       sidebar.className = "sidebar";
       sidebar.innerHTML = html;
     }
+
+    if (!document.querySelector(".sidebar-backdrop")) {
+      const backdrop = document.createElement("div");
+      backdrop.className = "sidebar-backdrop";
+      document.body.appendChild(backdrop);
+    }
+  }
+
+  // ── Mobile sidebar toggle setup ────────────────────────────────────
+  function setupMobileSidebar() {
+    const toggle = document.getElementById("sidebar-toggle-btn");
+    const backdrop = document.querySelector(".sidebar-backdrop");
+    const sidebar = document.getElementById("chrome-sidebar");
+
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        document.body.classList.toggle("sidebar-open");
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener("click", function () {
+        document.body.classList.remove("sidebar-open");
+      });
+    }
+
+    if (sidebar) {
+      sidebar.addEventListener("click", function (e) {
+        if (e.target.closest("a.nav-link")) {
+          document.body.classList.remove("sidebar-open");
+        }
+      });
+    }
   }
 
   // ── Build topbar HTML ──────────────────────────────────────────────
@@ -218,6 +251,9 @@
       <nav class="navbar navbar-expand-lg navbar-light top-navbar mb-4">
         <div class="container-fluid">
           <div class="d-flex align-items-center">
+            <button class="sidebar-toggle" id="sidebar-toggle-btn" type="button" title="Menu">
+              <i class="fas fa-bars"></i>
+            </button>
             <button class="btn btn-outline-secondary btn-sm me-2" type="button" onclick="window.history.back()" title="Back">
               <i class="fas fa-arrow-left"></i>
             </button>
@@ -287,6 +323,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     buildSidebar();
     buildTopbar();
+    setupMobileSidebar();
     buildDemoRibbon();
     buildOverlay();
     // Apply saved theme after sidebar is built.

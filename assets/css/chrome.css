@@ -488,3 +488,215 @@ body.theme-glass.theme-light .metric-badge.info {
 body.theme-glass.theme-light .score-ring.success { --ring-color: #059669; }
 body.theme-glass.theme-light .score-ring.warn    { --ring-color: #b45309; }
 body.theme-glass.theme-light .score-ring.fail    { --ring-color: #b91c1c; }
+
+/* ═══ Mobile responsiveness ═══ */
+.sidebar-toggle { display: none; }
+
+@media (max-width: 900px) {
+  /* Sidebar: hidden off-screen by default, slides in as overlay */
+  .sidebar,
+  body.theme-glass .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 2000;
+    border-radius: 0 20px 20px 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body.sidebar-open .sidebar,
+  body.sidebar-open.theme-glass .sidebar {
+    transform: translateX(0);
+    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Main content: full width */
+  .main-content {
+    margin-left: 0 !important;
+    padding: 10px;
+    width: 100%;
+  }
+
+  /* Backdrop overlay */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  body.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+
+  /* Hamburger toggle button */
+  .sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    cursor: pointer;
+    font-size: 1.15rem;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    padding: 0;
+    margin-right: 0.5rem;
+  }
+
+  .sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  body.theme-glass.theme-light .sidebar-toggle {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: #1f2937;
+  }
+
+  body.theme-glass.theme-light .sidebar-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  /* Topbar compact */
+  body.theme-glass .top-navbar {
+    margin: 0 0 15px 0;
+    padding: 6px 10px;
+    border-radius: 12px;
+  }
+
+  /* Hide search on mobile */
+  .top-navbar .search-box {
+    display: none !important;
+  }
+
+  /* Hide back/forward buttons on mobile */
+  .top-navbar .btn-outline-secondary {
+    display: none !important;
+  }
+
+  /* Notification bell smaller margin */
+  .top-navbar .notification-bell {
+    margin-right: 0.5rem !important;
+  }
+
+  /* User profile: hide text, keep avatar */
+  .user-profile .d-flex.flex-column {
+    display: none !important;
+  }
+
+  /* Welcome banner stacked */
+  .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .welcome-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+
+  .welcome-text h2 {
+    font-size: 1.2rem;
+  }
+
+  .welcome-text p {
+    font-size: 0.85rem;
+  }
+
+  /* Page heading smaller */
+  .page-heading h1 {
+    font-size: 1.4rem;
+  }
+
+  /* Cards more compact */
+  .card {
+    margin-bottom: 0.75rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Demo ribbon smaller */
+  .demo-ribbon {
+    font-size: 0.62rem;
+    padding: 4px 10px;
+    top: 6px;
+    right: 6px;
+  }
+
+  /* Bootstrap grid: single column */
+  .row.g-4 > [class*="col"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Stat row wrap */
+  .stat-row {
+    gap: 0.5rem;
+  }
+
+  .stat-pill {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  /* App card smaller padding */
+  .app-card-header {
+    padding: 1.25rem 1.25rem 1rem !important;
+  }
+
+  .app-card-body {
+    padding: 1rem 1.25rem 1.25rem !important;
+  }
+
+  /* Stat cards compact */
+  .stat-card {
+    padding: 0.9rem;
+  }
+
+  .stat-card .stat-value {
+    font-size: 1.4rem;
+  }
+
+  /* Tables scroll horizontally */
+  .table-responsive {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Pipeline grid reflow */
+  .pipeline-grid {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .pipeline-col {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 140px;
+  }
+
+  .pipeline-arrow {
+    display: none;
+  }
+
+  .pipeline-node-arrow {
+    display: none;
+  }
+}
