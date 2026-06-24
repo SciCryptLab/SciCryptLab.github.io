@@ -16,6 +16,14 @@
       .step-nav .step-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
       .step-nav .step-item.done .step-num { background: #22c55e; color: white; }
       .step-nav .step-item.active .step-num { background: var(--primary-color); color: white; }
+      .modal-content { background: rgba(17,24,39,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; backdrop-filter: blur(16px); }
+      .modal-header, .modal-footer { border-color: rgba(255,255,255,0.06) !important; }
+      .modal .form-control, .modal .form-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; }
+      .modal .form-control:focus, .modal .form-select:focus { background: rgba(255,255,255,0.08); border-color: var(--primary-color); box-shadow: 0 0 0 0.15rem rgba(37,99,235,0.25); color: white; }
+      .modal .form-control:disabled, .modal .form-control[readonly] { background: rgba(255,255,255,0.03); opacity: 0.6; }
+      .modal .form-label { margin-bottom: 0.3rem; }
+      .user-fig-row { animation: fadeInRow 0.3s ease; }
+      @keyframes fadeInRow { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 <script>
     // Apply saved theme synchronously to prevent flash of dark content.
@@ -60,7 +68,7 @@
                 <div class="card-header"><h6 class="mb-0"><i class="fas fa-shield-alt me-2 text-info"></i>Pre-submission integrity score</h6></div>
                 <div class="card-body d-flex align-items-center">
                     <div id="ring" style="width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:1.5rem;"><div><div id="rnum" style="font-size:1.6rem;font-weight:800;text-align:center;"></div><small class="text-muted d-block text-center">INTEGRITY</small></div></div>
-                    <div class="small text-muted">All 4 figures linked. Reproducibility for Fig. 3 is the weakest signal — <code>generate_figures.py</code> was edited after the <code>[SciTrace:Run]</code> commit.</div>
+                    <div class="small text-muted" id="ring-tip">All 4 figures linked. Reproducibility for Fig. 3 is the weakest signal — <code>generate_figures.py</code> was edited after the <code>[SciTrace:Run]</code> commit.</div>
                 </div>
             </div>
 
@@ -78,6 +86,41 @@
                     <button type="submit" class="btn btn-primary">Save &amp; Continue <i class="fas fa-arrow-right ms-1"></i></button>
                 </div>
             </form>
+
+            <div class="modal fade" id="addFigModal" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add Figure</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label class="form-label small text-muted">Type</label>
+                      <input type="text" class="form-control" id="modalType" disabled>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label small text-muted">Number</label>
+                      <input type="text" class="form-control" id="modalNumber" readonly>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label small text-muted">Caption</label>
+                      <input type="text" class="form-control" id="modalCaption" placeholder="e.g. Distribution of contaminant by month">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label small text-muted">SciTrace Node / Linkage</label>
+                      <select class="form-select" id="modalNode">
+                        <option value="">— No linkage —</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" id="modalSave">Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
     </div>
 </main>
@@ -92,22 +135,190 @@
 document.addEventListener("DOMContentLoaded", function () {
   const d = window.DEMO;
   const bandColor = (s) => s >= 70 ? '#34d399' : s >= 40 ? '#fbbf24' : '#f87171';
-  const c = bandColor(d.overallIntegrity);
-  document.getElementById("ring").style.border = `4px solid ${c}`;
-  document.getElementById("rnum").style.color = c;
-  document.getElementById("rnum").textContent = d.overallIntegrity + "%";
 
-  document.getElementById("figrows").innerHTML = d.figures.map((f) => {
-    const figOverall = Math.round((f.scores.traceability * 0.375 + f.scores.reproducibility * 0.625));
-    const fc = bandColor(figOverall);
-    return `<div class="row g-2 align-items-center mb-3 pb-3" style="border-bottom:1px solid rgba(255,255,255,0.06);">
-      <div class="col-md-1 text-center"><span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">${f.type[0]}${f.number}</span></div>
-      <div class="col-md-4"><div style="font-weight:500;">${f.caption}</div></div>
-      <div class="col-md-3"><select class="form-select form-select-sm"><option>Water quality analysis → ${f.node}</option></select></div>
-      <div class="col-md-2 text-center"><div style="font-weight:800;color:${fc};">${figOverall}%</div><div class="small text-muted">integrity</div></div>
-      <div class="col-md-2 text-end"><button type="button" class="btn btn-sm btn-outline-success" data-demo-rerun><i class="fas fa-rotate-right me-1"></i>Verify</button></div>
-    </div>`;
+  // --- Node options for linkage dropdown (plots + results only) ---
+  const baseNodes = d.repoNodes
+    .filter(function(n) { return (n.group === 'plots' || n.group === 'results') && n.label.indexOf('/') === -1; })
+    .map(function(n) { return { id: n.id, label: n.group + '/' + n.label }; });
+  const figureNodeOptions = baseNodes.filter(function(n) { return n.label.endsWith('.png'); });
+  const tableNodeOptions  = baseNodes.filter(function(n) { return n.label.endsWith('.csv'); });
+
+  // --- State ---
+  var originalScores = d.figures.map(function(f) {
+    return { id: f.id, score: Math.round(f.scores.traceability * 0.375 + f.scores.reproducibility * 0.625) };
+  });
+  var userFigures = [];
+  var nextFigNum = 5;
+  var nextTabNum = 1;
+
+  // --- Integrity calculation ---
+  function recalcIntegrity() {
+    var allScores = originalScores.map(function(s) { return s.score; }).concat(userFigures.map(function(f) { return f.score; }));
+    var hasZero = allScores.some(function(s) { return s === 0; });
+    if (hasZero) return 30;
+    return Math.round(allScores.reduce(function(a, s) { return a + s; }, 0) / allScores.length);
+  }
+
+  function updateRingAndTip() {
+    var ov = recalcIntegrity();
+    var c = bandColor(ov);
+    document.getElementById("ring").style.border = "4px solid " + c;
+    document.getElementById("rnum").style.color = c;
+    document.getElementById("rnum").textContent = ov + "%";
+    var total = originalScores.length + userFigures.length;
+    var unlinked = userFigures.filter(function(f) { return f.score === 0; }).length;
+    var tipEl = document.getElementById("ring-tip");
+    if (ov === 30 && unlinked > 0) {
+      tipEl.innerHTML = '<span style="color:#f87171;">' + unlinked + ' figure' + (unlinked > 1 ? 's' : '') + ' unlinked &mdash; overall integrity capped at 30%.</span> Update the linkage and verify to recover.';
+    } else if (ov === 30) {
+      tipEl.textContent = 'Overall integrity capped at 30%. Check all linkages.';
+    } else {
+      tipEl.textContent = 'All ' + total + ' figures linked and verified.';
+    }
+  }
+
+  // --- Init ring ---
+  document.getElementById("ring").style.border = "4px solid " + bandColor(recalcIntegrity());
+  document.getElementById("rnum").style.color = bandColor(recalcIntegrity());
+  document.getElementById("rnum").textContent = recalcIntegrity() + "%";
+
+  // --- Render original figures (read-only) ---
+  document.getElementById("figrows").innerHTML = d.figures.map(function(f) {
+    var figOverall = Math.round(f.scores.traceability * 0.375 + f.scores.reproducibility * 0.625);
+    var fc = bandColor(figOverall);
+    return '<div class="row g-2 align-items-center mb-3 pb-3 orig-fig-row" style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<div class="col-md-1 text-center"><span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">' + f.type[0] + f.number + '</span></div>' +
+      '<div class="col-md-4"><div style="font-weight:500;">' + f.caption + '</div></div>' +
+      '<div class="col-md-3"><select class="form-select form-select-sm" disabled><option>Water quality analysis &rarr; ' + f.node + '</option></select></div>' +
+      '<div class="col-md-2 text-center"><div style="font-weight:800;color:' + fc + ';">' + figOverall + '%</div><div class="small text-muted">integrity</div></div>' +
+      '<div class="col-md-2 text-end"><button type="button" class="btn btn-sm btn-outline-success" data-demo-rerun><i class="fas fa-rotate-right me-1"></i>Verify</button></div>' +
+    '</div>';
   }).join("");
+
+  // --- Build node dropdown options HTML ---
+  var figureOptsHTML = figureNodeOptions.map(function(n) {
+    return '<option value="' + n.id + '">' + n.label + '</option>';
+  }).join('');
+  var tableOptsHTML = tableNodeOptions.map(function(n) {
+    return '<option value="' + n.id + '">' + n.label + '</option>';
+  }).join('');
+
+  // --- Render a single user-figure row ---
+  function renderUserRow(fig, idx) {
+    var fc = fig.score === null ? '#94a3b8' : fig.score >= 70 ? '#34d399' : fig.score === 0 ? '#f87171' : '#fbbf24';
+    var scoreText = fig.score === null ? '&mdash;' : fig.score + '%';
+    var selectedVal = fig.nodeId || '';
+    var nodeSel = '<select class="form-select form-select-sm fig-node-select" data-idx="' + idx + '">' +
+      '<option value="">&mdash; No linkage &mdash;</option>';
+    var opts = fig.type === 'Figure' ? figureNodeOptions : tableNodeOptions;
+    opts.forEach(function(n) {
+      nodeSel += '<option value="' + n.id + '"' + (n.id === selectedVal ? ' selected' : '') + '>' + n.label + '</option>';
+    });
+    nodeSel += '</select>';
+    return '<div class="row g-2 align-items-center mb-3 pb-3 user-fig-row" data-idx="' + idx + '" style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<div class="col-md-1 text-center"><span class="badge" style="background:rgba(167,139,250,0.18);color:#c4b5fd;border:1px solid rgba(167,139,250,0.35);">' + fig.type[0] + fig.number + '</span></div>' +
+      '<div class="col-md-4"><div style="font-weight:500;">' + fig.caption + '</div></div>' +
+      '<div class="col-md-3">' + nodeSel + '</div>' +
+      '<div class="col-md-2 text-center"><div style="font-weight:800;color:' + fc + ';" class="fig-score-display">' + scoreText + '</div><div class="small text-muted">integrity</div></div>' +
+      '<div class="col-md-2 text-end">' +
+        '<button type="button" class="btn btn-sm btn-outline-info me-1 fig-verify-btn" data-idx="' + idx + '"><i class="fas fa-rotate-right me-1"></i>Verify</button>' +
+        '<button type="button" class="btn btn-sm btn-outline-danger fig-remove-btn" data-idx="' + idx + '"><i class="fas fa-times"></i></button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderAllUserRows() {
+    var container = document.getElementById("figrows");
+    container.querySelectorAll('.user-fig-row').forEach(function(el) { el.remove(); });
+    userFigures.forEach(function(fig, idx) {
+      container.insertAdjacentHTML('beforeend', renderUserRow(fig, idx));
+    });
+  }
+
+  // --- Modal wiring ---
+  var addModal = new bootstrap.Modal(document.getElementById("addFigModal"));
+  var currentAddType = 'Figure';
+
+  document.querySelector('.card-header .btn-outline-primary').addEventListener('click', function() {
+    currentAddType = 'Figure';
+    document.getElementById("modalTitle").textContent = 'Add Figure';
+    document.getElementById("modalType").value = 'Figure';
+    document.getElementById("modalNumber").value = nextFigNum;
+    document.getElementById("modalCaption").value = '';
+    document.getElementById("modalNode").innerHTML = '<option value="">&mdash; No linkage &mdash;</option>' + figureOptsHTML;
+    document.getElementById("modalNode").value = '';
+    addModal.show();
+  });
+
+  document.querySelector('.card-header .btn-outline-secondary').addEventListener('click', function() {
+    currentAddType = 'Table';
+    document.getElementById("modalTitle").textContent = 'Add Table';
+    document.getElementById("modalType").value = 'Table';
+    document.getElementById("modalNumber").value = nextTabNum;
+    document.getElementById("modalCaption").value = '';
+    document.getElementById("modalNode").innerHTML = '<option value="">&mdash; No linkage &mdash;</option>' + tableOptsHTML;
+    document.getElementById("modalNode").value = '';
+    addModal.show();
+  });
+
+  document.getElementById("modalSave").addEventListener('click', function() {
+    var caption = document.getElementById("modalCaption").value.trim();
+    var nodeId = document.getElementById("modalNode").value;
+    if (!caption) { alert('Please enter a caption.'); return; }
+    var fig = {
+      type: currentAddType,
+      number: currentAddType === 'Figure' ? nextFigNum : nextTabNum,
+      caption: caption,
+      nodeId: nodeId || null,
+      score: null
+    };
+    if (currentAddType === 'Figure') nextFigNum++; else nextTabNum++;
+    userFigures.push(fig);
+    renderAllUserRows();
+    updateRingAndTip();
+    addModal.hide();
+  });
+
+  // --- Event delegation ---
+  document.getElementById("figrows").addEventListener('click', function(e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-idx'));
+    if (isNaN(idx)) return;
+
+    // Verify
+    if (btn.classList.contains('fig-verify-btn')) {
+      var fig = userFigures[idx];
+      var selectEl = document.querySelector('.fig-node-select[data-idx="' + idx + '"]');
+      var selectedNodeId = selectEl ? selectEl.value : (fig.nodeId || '');
+      fig.nodeId = selectedNodeId || null;
+      var node = d.repoNodes.find(function(n) { return n.id === selectedNodeId && (n.group === 'plots' || n.group === 'results'); });
+      fig.score = node ? 100 : 0;
+      renderAllUserRows();
+      updateRingAndTip();
+    }
+
+    // Remove
+    if (btn.classList.contains('fig-remove-btn')) {
+      userFigures.splice(idx, 1);
+      // Re-index remaining figures
+      renderAllUserRows();
+      updateRingAndTip();
+    }
+  });
+
+  // --- Also update nodeId when user changes dropdown ---
+  document.getElementById("figrows").addEventListener('change', function(e) {
+    if (e.target.classList.contains('fig-node-select')) {
+      var idx = parseInt(e.target.getAttribute('data-idx'));
+      if (!isNaN(idx) && userFigures[idx]) {
+        userFigures[idx].nodeId = e.target.value || null;
+        // Reset score so user must re-verify
+        userFigures[idx].score = null;
+        renderAllUserRows();
+      }
+    }
+  });
 });
 </script>
 </body>
