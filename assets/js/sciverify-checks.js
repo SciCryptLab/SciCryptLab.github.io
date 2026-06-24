@@ -141,7 +141,7 @@
 
   function renderAiDetection(target, opts) {
     const d = window.DEMO;
-    const aiColor = d.aiOverall < 40 ? '#34d399' : d.aiOverall < 70 ? '#fbbf24' : '#f87171';
+    const aiColor = d.aiOverall >= 70 ? '#34d399' : d.aiOverall >= 40 ? '#fbbf24' : '#f87171';   // 0–39 = AI (red), 40–69 = mixed, 70–100 = human (green)
     const showMethodology = (opts && opts.methodology !== false);
     const sevColor = { critical: '#dc2626', high: '#ef4444', medium: '#f97316', low: '#fbbf24' };
     const sevBg = { critical: 'rgba(220,38,38,0.12)', high: 'rgba(239,68,68,0.10)', medium: 'rgba(249,115,22,0.08)', low: 'rgba(251,191,36,0.06)' };
@@ -154,12 +154,12 @@
       <details class="mb-3" style="background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;">
         <summary style="cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.85);"><i class="fas fa-flask me-2 text-info"></i><strong>How AI-written text is detected</strong> <span class="text-muted ms-2" style="font-size:0.75rem;">click to expand the 15-indicator rubric</span></summary>
         <div class="mt-3" style="font-size:0.78rem;line-height:1.5;color:rgba(255,255,255,0.75);">
-          <p>SciVerify scans the Main Article section-by-section for <strong>15 distinct fingerprints</strong> of LLM authorship — from blatant pasted-in chatbot replies to subtle vocabulary and cadence drifts. Critical-tier hits force the section <em>and</em> overall to ≥ 90 on their own.</p>
-          <div class="small fw-bold text-uppercase text-secondary mb-2" style="letter-spacing:0.05em;font-size:0.65rem;">Inverted bands</div>
+          <p>SciVerify scans the Main Article section-by-section for <strong>15 distinct fingerprints</strong> of LLM authorship — from blatant pasted-in chatbot replies to subtle vocabulary and cadence drifts. Critical-tier hits force the section <em>and</em> overall into the 0–39 fail band.</p>
+          <div class="small fw-bold text-uppercase text-secondary mb-2" style="letter-spacing:0.05em;font-size:0.65rem;">Score bands</div>
           <div style="font-size:0.72rem;line-height:1.7;">
-            <span class="metric-badge success">likely human</span> 0 – 39 &nbsp;·&nbsp;
+            <span class="metric-badge fail">likely AI</span> 0 – 39 &nbsp;·&nbsp;
             <span class="metric-badge warn">mixed</span> 40 – 69 &nbsp;·&nbsp;
-            <span class="metric-badge fail">likely AI</span> 70 – 100
+            <span class="metric-badge success">likely human</span> 70 – 100
           </div>
         </div>
       </details>` : ''}
@@ -169,15 +169,15 @@
           <div class="d-flex align-items-center mb-3">
             <div class="flex-shrink-0 me-4 text-center">
               <div style="width:100px;height:100px;border-radius:50%;border:3px solid ${aiColor};display:flex;align-items:center;justify-content:center;">
-                <div><div style="font-size:1.8rem;font-weight:700;color:${aiColor};">${d.aiOverall}%</div><small class="text-muted">AI-LIKE</small></div>
+                <div><div style="font-size:1.8rem;font-weight:700;color:${aiColor};">${d.aiOverall}%</div><small class="text-muted">AI-WRITTEN</small></div>
               </div>
             </div>
             <div class="flex-grow-1">
               <div class="small text-muted mb-1">Score semantics</div>
               <div style="font-size:0.85rem;line-height:1.5;">
-                <span style="color:#34d399;">0–39 likely human</span> ·
+                <span style="color:#f87171;">0–39 likely AI</span> ·
                 <span style="color:#fbbf24;">40–69 mixed / partial</span> ·
-                <span style="color:#f87171;">70–100 likely AI</span>
+                <span style="color:#34d399;">70–100 likely human</span>
               </div>
               <div class="small text-muted mt-2" style="line-height:1.45;font-size:0.78rem;"><i class="fas fa-info-circle me-1"></i>Overall is the <strong>word-weighted mean</strong> across sections.</div>
               <div class="mt-2"><span class="badge" style="background:rgba(220,38,38,0.25);color:#f87171;border:1px solid #dc2626;"><i class="fas fa-exclamation-circle me-1"></i>Critical pattern detected — leftover chatbot text in Discussion.</span></div>
