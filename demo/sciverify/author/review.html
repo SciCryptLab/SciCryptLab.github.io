@@ -96,10 +96,14 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const d = window.DEMO;
-  const c = d.overallIntegrity >= 70 ? '#34d399' : d.overallIntegrity >= 40 ? '#fbbf24' : '#f87171';
-  document.getElementById("ring").style.border = `5px solid ${c}`;
+  const figureScores = d.figures.map(function(f) {
+    return Math.round(f.scores.traceability * 0.375 + f.scores.reproducibility * 0.625);
+  });
+  const overall = Math.round(figureScores.reduce(function(a, s) { return a + s; }, 0) / figureScores.length);
+  const c = overall >= 70 ? '#34d399' : overall >= 40 ? '#fbbf24' : '#f87171';
+  document.getElementById("ring").style.border = "5px solid " + c;
   document.getElementById("rnum").style.color = c;
-  document.getElementById("rnum").textContent = d.overallIntegrity + "%";
+  document.getElementById("rnum").textContent = overall + "%";
 });
 </script>
 </body>
