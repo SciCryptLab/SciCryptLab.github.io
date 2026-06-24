@@ -47,6 +47,8 @@
         <p>Journal of Environmental Science &middot; Water Quality Reviews</p>
     </div>
 
+    <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: click <strong>Review</strong> on the primary submission to inspect it across all tabs — Integrity, References, AI Detection, Authors, and the Data Lifecycle.</div></div>
+
     <div class="row g-3 mb-4" id="stats-row"></div>
 
     <div class="card shadow-sm">
@@ -107,10 +109,10 @@ document.addEventListener("DOMContentLoaded", function () {
   ].join("");
 
   const statusBadge = (st) => ({
-    submitted: '<span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">Pending</span>',
-    revision: '<span class="badge" style="background:rgba(37,99,235,0.18);color:#93c5fd;border:1px solid rgba(37,99,235,0.35);">In revision</span>',
-    accepted: '<span class="badge" style="background:rgba(5,150,105,0.18);color:#34d399;border:1px solid rgba(5,150,105,0.35);">Decided</span>',
-    rejected: '<span class="badge" style="background:rgba(220,38,38,0.22);color:#fca5a5;border:1px solid rgba(220,38,38,0.45);">Decided</span>',
+    submitted: '<span class="badge badge-submitted">Pending</span>',
+    revision: '<span class="badge badge-revision">In revision</span>',
+    accepted: '<span class="badge badge-editor-accepted">Decided</span>',
+    rejected: '<span class="badge badge-editor-rejected">Decided</span>',
   }[st] || st);
   const integrityBadge = (n) => {
     const c = n >= 70 ? "#34d399" : n >= 40 ? "#fbbf24" : "#f87171";

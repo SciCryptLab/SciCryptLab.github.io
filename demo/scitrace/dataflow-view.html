@@ -228,6 +228,8 @@
         <p><code>/data/river-water-quality</code> · Water quality analysis</p>
     </div>
 
+    <div class="alert" style="background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.35);color:rgba(255,255,255,0.85);"><i class="fas fa-info-circle me-2 text-info"></i><strong>Dataflow Repository.</strong> The river‑water‑quality dataset — explore the repo graph, run scripts in order, view the lifecycle pipeline, and inspect git history.</div>
+
     <ul class="nav nav-tabs mb-3 flex-nowrap" role="tablist" style="overflow-x:auto;flex-wrap:nowrap;">
         <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#repo-tab" type="button"><i class="fas fa-folder-tree me-1"></i>Repo View</button></li>
         <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#lifecycle-tab" type="button"><i class="fas fa-project-diagram me-1"></i>Data Lifecycle</button></li>
@@ -281,6 +283,7 @@
 
         <!-- LIFECYCLE -->
         <div class="tab-pane fade" id="lifecycle-tab" role="tabpanel">
+            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: click any <strong>pipeline node</strong> to see its details (type, script, risk). The data flows from raw data → processing → visualization → output.</div></div>
             <div class="card shadow-sm mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-project-diagram me-2 text-info"></i>Data lifecycle (AI-derived)</h5>
@@ -318,6 +321,7 @@
 
         <!-- GIT LOG -->
         <div class="tab-pane fade" id="git-tab" role="tabpanel">
+            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: click a <strong>commit</strong> on the left to view its diff and metadata on the right. Commits tagged <code>[SciTrace:Run]</code> mark script executions — inspect them to see exactly what ran.</div></div>
             <div class="row g-3">
                 <div class="col-md-5">
                     <div class="card shadow-sm h-100">
@@ -343,6 +347,7 @@
 
         <!-- EDIT -->
         <div class="tab-pane fade" id="edit-tab" role="tabpanel">
+            <div class="alert d-flex align-items-center mb-3" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.4);color:#c4b5fd;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: edit the dataflow's name, description, or git settings. Click <strong>Save changes</strong> to see the demo confirmation overlay.</div></div>
             <div class="card shadow-sm">
                 <div class="card-header"><h5 class="mb-0"><i class="fas fa-pen me-2 text-info"></i>Edit dataflow</h5></div>
                 <div class="card-body">
