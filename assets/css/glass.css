@@ -182,6 +182,36 @@ body.theme-glass .badge {
     border-radius: 999px;
 }
 
+body.theme-glass .badge.badge-low,
+body.theme-glass .badge.badge-done { background: rgba(34,197,94,0.22) !important; border-color: rgba(34,197,94,0.4) !important; color: #bbf7d0 !important; }
+
+body.theme-glass .badge.badge-medium,
+body.theme-glass .badge.badge-ongoing { background: rgba(245,158,11,0.22) !important; border-color: rgba(245,158,11,0.4) !important; color: #fde68a !important; }
+
+body.theme-glass .badge.badge-urgent { background: rgba(239,68,68,0.22) !important; border-color: rgba(239,68,68,0.4) !important; color: #fecaca !important; }
+
+body.theme-glass .badge.badge-pending { background: rgba(156,163,175,0.22) !important; border-color: rgba(156,163,175,0.4) !important; color: #d1d5db !important; }
+
+body.theme-glass .badge.badge-submitted { background: rgba(251,191,36,0.22) !important; border-color: rgba(251,191,36,0.4) !important; color: #fbbf24 !important; }
+
+body.theme-glass .badge.badge-revision { background: rgba(37,99,235,0.22) !important; border-color: rgba(37,99,235,0.4) !important; color: #93c5fd !important; }
+
+body.theme-glass .badge.badge-editor-accepted { background: rgba(34,197,94,0.22) !important; border-color: rgba(34,197,94,0.4) !important; color: #bbf7d0 !important; }
+
+body.theme-glass .badge.badge-editor-rejected { background: rgba(239,68,68,0.22) !important; border-color: rgba(239,68,68,0.4) !important; color: #fecaca !important; }
+
+body.theme-glass .badge.badge-reviewer-accepted { background: rgba(37,99,235,0.22) !important; border-color: rgba(37,99,235,0.4) !important; color: #93c5fd !important; }
+
+body.theme-glass .badge.badge-completed { background: rgba(34,197,94,0.22) !important; border-color: rgba(34,197,94,0.4) !important; color: #bbf7d0 !important; }
+
+body.theme-glass .badge.badge-draft { background: rgba(255,255,255,0.10) !important; border-color: rgba(255,255,255,0.20) !important; color: rgba(255,255,255,0.65) !important; }
+
+body.theme-glass .badge.badge-manuscript-submitted { background: rgba(37,99,235,0.22) !important; border-color: rgba(37,99,235,0.4) !important; color: #93c5fd !important; }
+
+body.theme-glass .badge.badge-manuscript-accepted { background: rgba(34,197,94,0.22) !important; border-color: rgba(34,197,94,0.4) !important; color: #bbf7d0 !important; }
+
+body.theme-glass .badge.badge-manuscript-rejected { background: rgba(239,68,68,0.22) !important; border-color: rgba(239,68,68,0.4) !important; color: #fecaca !important; }
+
 /* Scrollbars */
 body.theme-glass ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); }
 body.theme-glass ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.18); }
@@ -361,6 +391,12 @@ body.theme-glass .alert.alert-warning { color: #fde68a !important; border-color:
 body.theme-glass .alert.alert-info { color: #bae6fd !important; border-color: rgba(186, 230, 253, 0.35) !important; }
 body.theme-glass .alert.alert-success { color: #bbf7d0 !important; border-color: rgba(187, 247, 208, 0.35) !important; }
 body.theme-glass .alert.alert-danger { color: #fecaca !important; border-color: rgba(254, 202, 202, 0.35) !important; }
+
+body.theme-glass:not(.theme-light) .alert.d-flex.align-items-center {
+    background: rgba(167,139,250,0.25) !important;
+    border: 1px solid rgba(167,139,250,0.6) !important;
+    color: #e9d5ff !important;
+}
 
 /* Tables */
 body.theme-glass table.table { color: var(--glass-text); }
@@ -1651,6 +1687,37 @@ body.theme-glass.theme-light .badge-status-ongoing {
     background: linear-gradient(135deg, #f59e0b, #d97706) !important;
     color: #ffffff !important;
 }
+
+/* Light theme priority/status short variants (match chrome.css naming) */
+body.theme-glass.theme-light .badge.badge-low,
+body.theme-glass.theme-light .badge.badge-done { background: rgba(34,197,94,0.18) !important; color: #065f46 !important; border-color: rgba(34,197,94,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-medium,
+body.theme-glass.theme-light .badge.badge-ongoing { background: rgba(245,158,11,0.18) !important; color: #92400e !important; border-color: rgba(245,158,11,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-urgent { background: rgba(239,68,68,0.18) !important; color: #991b1b !important; border-color: rgba(239,68,68,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-pending { background: rgba(107,114,128,0.18) !important; color: #374151 !important; border-color: rgba(107,114,128,0.35) !important; }
+
+body.theme-glass.theme-light .badge.badge-submitted { background: rgba(245,158,11,0.18) !important; color: #92400e !important; border-color: rgba(245,158,11,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-revision { background: rgba(37,99,235,0.18) !important; color: #0369a1 !important; border-color: rgba(37,99,235,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-editor-accepted { background: rgba(34,197,94,0.18) !important; color: #065f46 !important; border-color: rgba(34,197,94,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-editor-rejected { background: rgba(239,68,68,0.18) !important; color: #991b1b !important; border-color: rgba(239,68,68,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-reviewer-accepted { background: rgba(37,99,235,0.18) !important; color: #0369a1 !important; border-color: rgba(37,99,235,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-completed { background: rgba(34,197,94,0.18) !important; color: #065f46 !important; border-color: rgba(34,197,94,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-draft { background: rgba(107,114,128,0.15) !important; color: #374151 !important; border-color: rgba(107,114,128,0.30) !important; }
+
+body.theme-glass.theme-light .badge.badge-manuscript-submitted { background: rgba(37,99,235,0.18) !important; color: #0369a1 !important; border-color: rgba(37,99,235,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-manuscript-accepted { background: rgba(34,197,94,0.18) !important; color: #065f46 !important; border-color: rgba(34,197,94,0.4) !important; }
+
+body.theme-glass.theme-light .badge.badge-manuscript-rejected { background: rgba(239,68,68,0.18) !important; color: #991b1b !important; border-color: rgba(239,68,68,0.4) !important; }
 
 body.theme-glass.theme-light .badge-status-todo {
     background: linear-gradient(135deg, #6b7280, #4b5563) !important;
