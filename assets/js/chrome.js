@@ -88,11 +88,11 @@
   ];
 
   const sciverifyEditorNav = [
-    { key: "dashboard", icon: "fa-th-large", label: "Editor Dashboard", href: demoUrl("sciverify/editor/dashboard.html") },
+    { key: "dashboard", icon: "fa-th-large", label: "Dashboard", href: demoUrl("sciverify/editor/dashboard.html") },
   ];
 
   const sciverifyReviewerNav = [
-    { key: "dashboard", icon: "fa-th-large", label: "Reviewer Dashboard", href: demoUrl("sciverify/reviewer/dashboard.html") },
+    { key: "dashboard", icon: "fa-th-large", label: "Dashboard", href: demoUrl("sciverify/reviewer/dashboard.html") },
   ];
 
   function navFor(app, role) {
