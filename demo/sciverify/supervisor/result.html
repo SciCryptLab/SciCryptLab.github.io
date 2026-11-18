@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuscript Check Report · SciVerify</title>
+    <link rel="icon" type="image/png" href="../../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../../assets/css/chrome.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="sciverify" data-active="check">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+
+    <div class="page-heading">
+        <div class="d-flex align-items-center mb-2">
+            <a href="dashboard.html" class="btn btn-sm btn-outline-secondary me-3"><i class="fas fa-arrow-left me-1"></i>Back to dashboard</a>
+            <span class="badge me-2" style="background:rgba(6,182,212,0.18);color:#67e8f9;border:1px solid rgba(6,182,212,0.35);">Check #12</span>
+            <span class="badge" style="background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.35);">complete · pre-submission check</span>
+        </div>
+        <h1>Thesis chapter 3 — groundwater quality</h1>
+        <p>manuscript.docx · thesis_analysis.py · site_A.csv, site_B.csv, site_C.csv · Checked <span id="check-date">2026-06-02 14:20</span></p>
+    </div>
+
+    <div class="alert d-flex align-items-center mb-3" style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.4);color:#67e8f9;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: this report is for you, not a journal. Send the author the flagged passages and the reference statuses before submission.</div></div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center py-4">
+                    <div id="sum-ai" style="font-size:2.4rem;font-weight:800;">…</div>
+                    <div class="stat-label">AI-text check</div>
+                    <div class="small text-muted mt-1">flagged passages below</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center py-4">
+                    <div id="sum-refs" style="font-size:2.4rem;font-weight:800;">…</div>
+                    <div class="stat-label">References verified</div>
+                    <div class="small text-muted mt-1" id="sum-refs-note">checking every DOI against Crossref</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center py-4">
+                    <div id="sum-data" style="font-size:2.4rem;font-weight:800;">…</div>
+                    <div class="stat-label">Data verification</div>
+                    <div class="small text-muted mt-1" id="sum-data-note">traceability · reproducibility · manipulation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI-text detection -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-robot me-2 text-info"></i>AI-text detection</h5></div>
+        <div class="card-body" id="ai-mount"></div>
+    </div>
+
+    <!-- Reference validation -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-bookmark me-2 text-info"></i>Reference validation</h5></div>
+        <div class="card-body" id="ref-mount"></div>
+    </div>
+
+    <!-- Data verification -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header"><h5 class="mb-0"><i class="fas fa-shield-alt me-2 text-info"></i>Data verification</h5></div>
+        <div class="card-body" id="data-mount"></div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../../assets/js/theme.js"></script>
+<script src="../../../assets/js/chrome.js"></script>
+<script src="../../../assets/js/demo-data.js"></script>
+<script src="../../../assets/js/demo-router.js"></script>
+<script src="../../../assets/js/sciverify-checks.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var d = window.DEMO;
+  window.SciVerifyChecks.renderAiDetection(document.getElementById("ai-mount"));
+  window.SciVerifyChecks.renderReferences(document.getElementById("ref-mount"));
+
+  // Data verification section
+  var v = d.verification;
+  var mount = document.getElementById("data-mount");
+  var rows = [
+    { key: "traceability", label: "Traceability", icon: "fa-code-branch", findings: v.traceability.findings },
+    { key: "reproducibility", label: "Reproducibility", icon: "fa-rotate", findings: v.reproducibility.findings },
+    { key: "manipulation", label: "Manipulation transparency", icon: "fa-magnifying-glass", findings: v.manipulation.findings },
+  ];
+  mount.innerHTML = rows.map(function (r) {
+    var status = v[r.key].status;
+    var color = status === "pass" ? "#34d399" : status === "warn" ? "#fbbf24" : "#f87171";
+    var badge = status === "pass"
+      ? '<span class="metric-badge success">pass</span>'
+      : '<span class="metric-badge warn">warn</span>';
+    return '<div class="mb-3">' +
+      '<div class="d-flex align-items-center mb-2"><i class="fas ' + r.icon + ' me-2" style="color:' + color + ';"></i><strong>' + r.label + '</strong><span class="ms-2">' + badge + '</span></div>' +
+      r.findings.map(function (f) {
+        var fc = f.status === "pass" ? "#34d399" : "#fbbf24";
+        return '<div class="d-flex align-items-start mb-2" style="font-size:0.85rem;">' +
+          '<i class="fas fa-circle me-2 mt-1" style="font-size:0.5rem;color:' + fc + ';"></i>' +
+          '<span><strong style="color:white;">' + f.figure + '</strong> — ' + f.note + '</span></div>';
+      }).join("") +
+    '</div>';
+  }).join("");
+
+  // Summary cards (inverted semantics: 100 = human, 0 = AI)
+  var ai = d.aiOverall;
+  var aiColor = ai >= 70 ? "#34d399" : ai >= 40 ? "#fbbf24" : "#f87171";
+  document.getElementById("sum-ai").innerHTML = ai + '<span style="font-size:1rem;color:rgba(255,255,255,0.4);">/100</span>';
+  document.getElementById("sum-ai").style.color = aiColor;
+
+  var rs = d.refSummary;
+  var refColor = rs.matched === rs.total ? "#34d399" : "#fbbf24";
+  document.getElementById("sum-refs").innerHTML = rs.matched + '<span style="font-size:1rem;color:rgba(255,255,255,0.4);">/' + rs.total + '</span>';
+  document.getElementById("sum-refs").style.color = refColor;
+  var bad = (rs.mismatched || 0) + (rs.invalid || 0);
+  document.getElementById("sum-refs-note").textContent = bad > 0 ? bad + " hallucinated or mismatched DOI flagged" : "every DOI resolved";
+
+  var di = d.overallIntegrity;
+  var diColor = di >= 70 ? "#34d399" : di >= 40 ? "#fbbf24" : "#f87171";
+  document.getElementById("sum-data").innerHTML = di + '<span style="font-size:1rem;color:rgba(255,255,255,0.4);">/100</span>';
+  document.getElementById("sum-data").style.color = diColor;
+  var warns = d.verification.reproducibility.findings.filter(function (f) { return f.status !== "pass"; }).length
+    + d.verification.manipulation.findings.filter(function (f) { return f.status !== "pass"; }).length;
+  document.getElementById("sum-data-note").textContent = warns > 0 ? warns + " finding(s) need a note" : "all checks passed";
+
+  document.getElementById("check-date").textContent = "2026-06-02 14:20";
+});
+</script>
+</body>
+</html>

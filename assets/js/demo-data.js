@@ -605,6 +605,27 @@ window.DEMO = (function () {
     { id: 90, title: "Nutrient levels in wetland monitoring data", journal: "Journal of Environmental Science", status: "accepted", assigned_at: "2026-04-22", reviewer_decision: null },
   ];
 
+  // Supervisor check-tool jobs (pre-submission manuscript checks)
+  const supervisorJobs = [
+    { id: 12, title: "Thesis chapter 3 — groundwater quality", status: "complete", created_at: "2026-06-02 14:20", score: 78 },
+    { id: 11, title: "Co-authored paper — nanoparticle uptake", status: "complete", created_at: "2026-05-28 09:05", score: 62 },
+    { id: 10, title: "Student manuscript — river sampling", status: "complete", created_at: "2026-05-21 16:40", score: 41 },
+    { id: 9, title: "Review draft — filtration methods", status: "error", created_at: "2026-05-15 11:12", score: null },
+  ];
+  const supervisorStats = {
+    total: supervisorJobs.length + 3,
+    complete: 5,
+    running: 1,
+    error: 1,
+  };
+
+  // Dataflows available to the supervisor (from their supervised researchers)
+  const supervisorDataflows = [
+    { id: 1, name: "river-water-quality" },
+    { id: 2, name: "nanoparticle-analysis" },
+    { id: 3, name: "groundwater-sampling" },
+  ];
+
   // Author messages
   const messages = [
     { sender: "editor", name: "Maria Torres", date: "2026-05-31 09:12", body: "Thanks for the submission. The reference and AI-text checks ran automatically; I'll review the flags before assigning reviewers." },
@@ -740,6 +761,7 @@ window.DEMO = (function () {
     verification, overallIntegrity, refScore, authorsScore, aiIntegrityScore,
     authorsSummary,
     editorQueue, editorStats, reviewerStats, reviewerQueue,
+    supervisorStats, supervisorJobs, supervisorDataflows,
     messages, reviewerThread,
     fileContents,
   };

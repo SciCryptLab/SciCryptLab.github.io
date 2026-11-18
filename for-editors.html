@@ -77,7 +77,7 @@
             <h3>Five automated checks per submission. All re-runnable. All explainable.</h3>
             <ul>
                 <li><strong>References.</strong> Every entry parsed, DOIs resolved against Crossref, scored on five signals (author, title, year, journal, volume). Fabricated DOIs surface immediately.</li>
-                <li><strong>AI text.</strong> 15 heuristic indicators across IMRaD sections — pasted chatbot prefixes, tortured phrasing, hallucinated citations, sentence-cadence patterns, topical drift. Critical hits force a section into the "likely AI" band on their own.</li>
+                <li><strong>AI text.</strong> 22 indicators across six buckets — pasted chatbot prefixes, tortured phrasing, hallucinated citations, sentence-cadence patterns, plus a local GPT-2 perplexity and burstiness model. Critical hits force a section into the "likely AI" band on their own.</li>
                 <li><strong>Authors.</strong> Each author checked against OpenAlex for existence, ORCID linkage, and topical overlap with the manuscript. Ghost authors and identity fraud surface.</li>
                 <li><strong>Data integrity.</strong> If the author linked a SciTrace dataflow, every figure is scored for traceability and reproducibility, with provenance commits as ground truth. Manipulation transparency is assessed across the full dataset.</li>
                 <li><strong>One integrity number.</strong> Six weighted signals — traceability, reproducibility, manipulation, AI detection, references, and authors — combined into a single banded score. The full evidence is one tab click away.</li>
@@ -117,7 +117,7 @@
         <div class="feature-cards">
             <a class="feature-card sv reveal delay-1" href="feature-traceability-reproducibility.html"><div class="fc-icon"><i class="fas fa-code-branch"></i></div><h4>Traceability &amp; Reproducibility</h4><p>Traceability and reproducibility, weighted into the integrity score.</p><span class="fc-arrow">Learn more →</span></a>
             <a class="feature-card sv reveal delay-2" href="feature-reference-validation.html"><div class="fc-icon"><i class="fas fa-link"></i></div><h4>Reference validation</h4><p>Every DOI checked against Crossref.</p><span class="fc-arrow">Learn more →</span></a>
-            <a class="feature-card sv reveal" href="feature-ai-text-detection.html"><div class="fc-icon"><i class="fas fa-robot"></i></div><h4>AI-text detection</h4><p>15 heuristics, highlighted triggers, per section.</p><span class="fc-arrow">Learn more →</span></a>
+            <a class="feature-card sv reveal" href="feature-ai-text-detection.html"><div class="fc-icon"><i class="fas fa-robot"></i></div><h4>AI-text detection</h4><p>22 indicators, six buckets, highlighted triggers.</p><span class="fc-arrow">Learn more →</span></a>
             <a class="feature-card sv reveal delay-1" href="feature-author-verification.html"><div class="fc-icon"><i class="fas fa-user-check"></i></div><h4>Author verification</h4><p>OpenAlex existence, linkage and field-match.</p><span class="fc-arrow">Learn more →</span></a>
         </div>
 

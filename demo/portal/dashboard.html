@@ -115,12 +115,12 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const role = sessionStorage.getItem("demoRole") || "editor";
-  const meta = { author: { name: "Alex Chen", initial: "A" }, editor: { name: "Maria Torres", initial: "E" }, reviewer: { name: "James Park", initial: "R" } }[role];
+  const meta = { author: { name: "Alex Chen", initial: "A" }, editor: { name: "Maria Torres", initial: "E" }, reviewer: { name: "James Park", initial: "R" }, supervisor: { name: "Dr. Lena Fischer", initial: "L" } }[role];
   document.getElementById("welcome-init").textContent = meta.initial;
   document.getElementById("welcome-msg").textContent = "Welcome back, " + meta.name;
 
   // SciTrace tile only for author per role gating
-  if (role !== "author") document.getElementById("scitrace-tile").style.display = "none";
+  if (role !== "author" && role !== "supervisor") document.getElementById("scitrace-tile").style.display = "none";
 
   // SciVerify stats — dynamic from demo-data
   const es = window.DEMO && window.DEMO.editorStats;
@@ -130,7 +130,10 @@ document.addEventListener("DOMContentLoaded", function () {
     : role === "reviewer"
       ? '<div class="stat-pill"><i class="fas fa-glasses" style="color:#a78bfa;"></i> <span class="stat-num">4</span> Assignments</div>' +
         '<div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">1</span> Pending</div>'
-      : '<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">3</span> Submissions</div>';
+      : role === "supervisor"
+        ? '<div class="stat-pill"><i class="fas fa-flask" style="color:#a78bfa;"></i> <span class="stat-num">' + (window.DEMO && window.DEMO.supervisorStats ? window.DEMO.supervisorStats.total : 7) + '</span> Manuscript checks</div>' +
+          '<div class="stat-pill"><i class="fas fa-clock" style="color:#fb923c;"></i> <span class="stat-num">' + (window.DEMO && window.DEMO.supervisorStats ? window.DEMO.supervisorStats.running : 1) + '</span> Running</div>'
+        : '<div class="stat-pill"><i class="fas fa-file-alt" style="color:#a78bfa;"></i> <span class="stat-num">3</span> Submissions</div>';
   document.getElementById("sv-stats").innerHTML = stats;
 });
 </script>

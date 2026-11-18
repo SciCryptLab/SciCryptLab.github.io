@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervisor Dashboard · SciVerify</title>
+    <link rel="icon" type="image/png" href="../../../assets/img/scicrypt-mark.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../../assets/css/chrome.css" rel="stylesheet">
+<script>
+    // Apply saved theme synchronously to prevent flash of dark content.
+(function () {
+    try {
+        if (localStorage.getItem("theme") === "light") {
+            document.documentElement.classList.add("theme-light");
+            // The body element isn't parsed yet (this script runs in <head>).
+            // Use a MutationObserver to add the class to <body> the instant
+            // it's appended, before any body content is painted.
+            new MutationObserver(function (_, obs) {
+                if (document.body) {
+                    document.body.classList.add("theme-light");
+                    obs.disconnect();
+                }
+            }).observe(document.documentElement, { childList: true, subtree: true });
+        }
+    } catch (e) {}
+})();
+</script>
+</head>
+<body class="theme-glass" data-app="sciverify" data-active="dashboard">
+<nav id="chrome-sidebar"></nav>
+<main class="main-content">
+    <div id="chrome-topbar"></div>
+
+    <div class="welcome-banner">
+        <div class="welcome-avatar">L</div>
+        <div class="welcome-text">
+            <h2>Welcome back, Dr. Lena Fischer</h2>
+            <p>Check a manuscript before it goes anywhere: AI-written text, hallucinated references, and the data behind every figure.</p>
+        </div>
+    </div>
+
+    <div class="page-heading d-flex justify-content-between align-items-end">
+        <div>
+            <h1>Supervisor Dashboard</h1>
+            <p>Pre-submission manuscript checks</p>
+        </div>
+        <div>
+            <a href="new-check.html" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Check a Manuscript
+            </a>
+        </div>
+    </div>
+
+    <div class="alert d-flex align-items-center mb-3" style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.4);color:#67e8f9;font-size:0.85rem;border-radius:8px;padding:0.6rem 0.9rem;"><i class="fas fa-hand-pointer me-2"></i><div>Tip: open <strong>“Thesis chapter 3”</strong> to see a full report — AI-text flags with highlighted passages, reference statuses, and the data verification scores.</div></div>
+
+    <div class="row g-3 mb-4" id="stats-row"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-flask me-2 text-info"></i>Recent checks</h5>
+            <span class="small text-muted">Check Tool</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th class="text-center">Score</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../../assets/js/theme.js"></script>
+<script src="../../../assets/js/chrome.js"></script>
+<script src="../../../assets/js/demo-data.js"></script>
+<script src="../../../assets/js/demo-router.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const d = window.DEMO;
+  const s = d.supervisorStats;
+
+  const statCard = (label, value, icon, bg) => `<div class="col-md col-6"><div class="stat-card d-flex justify-content-between align-items-center">
+    <div><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>
+    <div class="stat-icon" style="background:${bg};"><i class="fas ${icon}"></i></div>
+  </div></div>`;
+  document.getElementById("stats-row").innerHTML = [
+    statCard("Total checks", s.total, "fa-flask", "linear-gradient(135deg,#06b6d4,#059669)"),
+    statCard("Completed", s.complete, "fa-check-circle", "linear-gradient(135deg,#059669,#22c55e)"),
+    statCard("Running", s.running, "fa-clock", "linear-gradient(135deg,#f59e0b,#06b6d4)"),
+    statCard("Errors", s.error, "fa-triangle-exclamation", "linear-gradient(135deg,#6b7280,#dc2626)"),
+  ].join("");
+
+  const statusBadge = (st) => ({
+    complete: '<span class="badge badge-editor-accepted">Complete</span>',
+    running: '<span class="badge badge-submitted">Running</span>',
+    error: '<span class="badge badge-editor-rejected">Error</span>',
+  }[st] || st);
+  const scoreBadge = (n) => {
+    if (n === null) return '<span class="text-muted">—</span>';
+    const c = n >= 70 ? "#34d399" : n >= 40 ? "#fbbf24" : "#f87171";
+    return `<strong style="color:${c};">${n}</strong>`;
+  };
+
+  document.getElementById("jobs").innerHTML = d.supervisorJobs.map(function (j) {
+    return '<tr>' +
+      '<td><div style="font-weight:600;color:white;">' + j.title + '</div></td>' +
+      '<td>' + statusBadge(j.status) + '</td>' +
+      '<td>' + j.created_at + '</td>' +
+      '<td class="text-center">' + scoreBadge(j.score) + '</td>' +
+      '<td class="text-end">' +
+        (j.status === "complete"
+          ? '<a href="result.html" class="btn btn-sm btn-primary"><i class="fas fa-eye me-1"></i>Open</a>'
+          : '<button class="btn btn-sm btn-outline-secondary" disabled><i class="fas fa-eye me-1"></i>Open</button>') +
+      '</td>' +
+    '</tr>';
+  }).join("");
+});
+</script>
+</body>
+</html>

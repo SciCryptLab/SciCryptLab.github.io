@@ -27,6 +27,7 @@
       .role-pick-card.author .role-glyph { background: linear-gradient(135deg,#22c55e,#06b6d4); }
       .role-pick-card.editor .role-glyph { background: linear-gradient(135deg,#2563eb,#a78bfa); }
       .role-pick-card.reviewer .role-glyph { background: linear-gradient(135deg,#f59e0b,#dc2626); }
+      .role-pick-card.supervisor .role-glyph { background: linear-gradient(135deg,#06b6d4,#059669); }
       .role-pick-card h3 { color: white; font-weight: 700; margin: 0 0 0.5rem; }
       .role-pick-card .role-username { font-family: var(--bs-font-monospace); color: #93c5fd; font-size: 0.85rem; margin-bottom: 1rem; }
       .role-pick-card p { color: rgba(255,255,255,0.7); margin: 0 0 1.25rem; line-height: 1.55; font-size: 0.92rem; }
@@ -101,6 +102,13 @@
                 <div class="role-username">james-park</div>
                 <p>See your queued assignment, switch into the Data Lifecycle tab to inspect the linked dataflow graph, post a private comment to the editor, file your recommendation.</p>
                 <div class="role-screens"><span>Reviewer dashboard</span><span>Data lifecycle</span><span>Private thread</span></div>
+            </a>
+            <a class="role-pick-card supervisor" href="javascript:demoLoginAs('supervisor')">
+                <div class="role-glyph"><i class="fas fa-user-check"></i></div>
+                <h3>Supervisor</h3>
+                <div class="role-username">lena-fischer</div>
+                <p>Check a manuscript before it goes anywhere: upload it to the Check Tool and read the AI-text, reference, and data verification results in one report.</p>
+                <div class="role-screens"><span>Supervisor dashboard</span><span>Check Tool</span><span>AI-text report</span></div>
             </a>
         </div>
     </div>

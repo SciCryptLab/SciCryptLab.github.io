@@ -69,7 +69,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const role = sessionStorage.getItem("demoRole") || "editor";
-  const map = { author: ["Alex Chen", "alex.chen@uni-heidelberg.de", "alex-chen"], editor: ["Maria Torres", "editor@example.org", "maria-torres"], reviewer: ["James Park", "reviewer@example.org", "james-park"] }[role];
+  const map = { author: ["Alex Chen", "alex.chen@uni-heidelberg.de", "alex-chen"], editor: ["Maria Torres", "editor@example.org", "maria-torres"], reviewer: ["James Park", "reviewer@example.org", "james-park"], supervisor: ["Dr. Lena Fischer", "lena.fischer@university.de", "lena-fischer"] }[role];
   document.getElementById("f-name").value = map[0];
   document.getElementById("f-email").value = map[1];
   document.getElementById("f-user").value = map[2];

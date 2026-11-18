@@ -152,9 +152,9 @@
     target.innerHTML = `
       ${showMethodology ? `
       <details class="mb-3" style="background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 14px;">
-        <summary style="cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.85);"><i class="fas fa-flask me-2 text-info"></i><strong>How AI-written text is detected</strong> <span class="text-muted ms-2" style="font-size:0.75rem;">click to expand the 15-indicator rubric</span></summary>
+        <summary style="cursor:pointer;font-size:0.85rem;color:rgba(255,255,255,0.85);"><i class="fas fa-flask me-2 text-info"></i><strong>How AI-written text is detected</strong> <span class="text-muted ms-2" style="font-size:0.75rem;">click to expand the six-bucket rubric</span></summary>
         <div class="mt-3" style="font-size:0.78rem;line-height:1.5;color:rgba(255,255,255,0.75);">
-          <p>SciVerify scans the Main Article section-by-section for <strong>15 distinct fingerprints</strong> of LLM authorship — from blatant pasted-in chatbot replies to subtle vocabulary and cadence drifts. Critical-tier hits force the section <em>and</em> overall into the 0–39 fail band.</p>
+          <p>SciVerify scans the Main Article section-by-section for <strong>22 indicators across six buckets</strong> of LLM authorship — from blatant pasted-in chatbot replies to subtle vocabulary and cadence drifts, plus a local GPT-2 perplexity and burstiness model. Critical-tier hits force the section <em>and</em> overall into the 0–39 fail band.</p>
           <div class="small fw-bold text-uppercase text-secondary mb-2" style="letter-spacing:0.05em;font-size:0.65rem;">Score bands</div>
           <div style="font-size:0.72rem;line-height:1.7;">
             <span class="metric-badge fail">likely AI</span> 0 – 39 &nbsp;·&nbsp;

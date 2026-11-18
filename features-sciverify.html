@@ -114,7 +114,7 @@
             <li><strong>Traceability (15%).</strong> Files are tracked and clean rather than untracked or modified out from under their history.</li>
             <li><strong>Reproducibility (25%).</strong> The history contains <code>[SciTrace:Run]</code> records with inputs and scripts present and outputs not hand-edited. An opt-in <em>deep</em> check re-executes the recorded command and byte-compares the outputs — cached, with auto-invalidation when scripts or inputs change.</li>
             <li><strong>Manipulation transparency (20%).</strong> Undocumented and high-risk data transforms cost points; documented, routine ones don't.</li>
-            <li><strong>AI-text detection (10%).</strong> SciVerify scans every IMRaD section for 15 heuristic indicators of LLM authorship. The inverted score (100 − AI-likeness) feeds the integrity formula: the more human the text reads, the higher the contribution.</li>
+            <li><strong>AI-text detection (10%).</strong> SciVerify scans every IMRaD section with 22 indicators across six buckets, a local GPT-2 perplexity and burstiness model, and a calibrated logistic-regression ensemble. The inverted score (100 − AI-likeness) feeds the integrity formula: the more human the text reads, the higher the contribution.</li>
             <li><strong>Reference validation (20%).</strong> Each reference is resolved against Crossref and scored on five signals — author, title, year, journal, volume. The average across all references feeds the formula. Mismatched or unresolvable DOIs pull the score down.</li>
             <li><strong>Author verification (10%).</strong> Every listed author is checked against OpenAlex for existence, ORCID linkage, and topical field-match. The average across authors feeds the formula. Unverifiable or mismatched authors cost points.</li>
         </ul>
@@ -135,7 +135,7 @@
             <a class="feature-card sv reveal delay-2" href="feature-ai-text-detection.html">
                 <div class="fc-icon"><i class="fas fa-robot"></i></div>
                 <h4>AI-text detection</h4>
-                <p>15 heuristic indicators across IMRaD sections — chatbot leaks, tortured phrasing, hallucinated citations, cadence anomalies — with the trigger words highlighted.</p>
+                <p>22 indicators across six buckets — chatbot leaks, tortured phrasing, hallucinated citations, perplexity and burstiness — with the trigger words highlighted.</p>
                 <span class="fc-arrow">Learn more →</span>
             </a>
             <a class="feature-card sv reveal" href="feature-reference-validation.html">

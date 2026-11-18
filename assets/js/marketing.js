@@ -571,6 +571,7 @@
     ["for-researchers.html", "fa-flask", "Researchers"],
     ["for-editors.html", "fa-user-tie", "Editors"],
     ["for-reviewers.html", "fa-glasses", "Reviewers"],
+    ["for-supervisors.html", "fa-user-check", "Supervisors"],
     ["for-publishers.html", "fa-building", "Publishers & institutions"],
   ];
   function mmItems(list) {

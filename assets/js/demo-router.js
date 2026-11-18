@@ -58,10 +58,12 @@
     const role = sessionStorage.getItem("demoRole") || "editor";
     let dest;
     if (app === "scitrace") {
-      dest = window.demoChrome.demoUrl("scitrace/dashboard.html");
+      if (role === "supervisor") dest = window.demoChrome.demoUrl("scitrace/supervisor/dashboard.html");
+      else dest = window.demoChrome.demoUrl("scitrace/dashboard.html");
     } else if (app === "sciverify") {
       if (role === "editor") dest = window.demoChrome.demoUrl("sciverify/editor/dashboard.html");
       else if (role === "reviewer") dest = window.demoChrome.demoUrl("sciverify/reviewer/dashboard.html");
+      else if (role === "supervisor") dest = window.demoChrome.demoUrl("sciverify/supervisor/dashboard.html");
       else dest = window.demoChrome.demoUrl("sciverify/author/submissions.html");
     }
     show("Opening " + app + "…");

@@ -38,6 +38,7 @@
       author: { name: "Alex Chen", initial: "A", label: "Researcher", username: "alex-chen" },
       editor: { name: "Maria Torres", initial: "M", label: "Editor", username: "maria-torres" },
       reviewer: { name: "James Park", initial: "J", label: "Reviewer", username: "james-park" },
+      supervisor: { name: "Dr. Lena Fischer", initial: "L", label: "Supervisor", username: "lena-fischer" },
     }[role];
   }
 
@@ -83,6 +84,13 @@
     { key: "tasks", icon: "fa-tasks", label: "Tasks", href: demoUrl("scitrace/tasks.html") },
   ];
 
+  const scitraceSupervisorNav = [
+    { key: "dashboard", icon: "fa-th-large", label: "Dashboard", href: demoUrl("scitrace/supervisor/dashboard.html") },
+    { key: "projects", icon: "fa-folder", label: "Supervised Projects", href: demoUrl("scitrace/projects-list.html") },
+    { key: "dataflows", icon: "fa-project-diagram", label: "Supervised Dataflows", href: demoUrl("scitrace/dataflow-list.html") },
+    { key: "tasks", icon: "fa-tasks", label: "Supervised Tasks", href: demoUrl("scitrace/tasks.html") },
+  ];
+
   const sciverifyAuthorNav = [
     { key: "submissions", icon: "fa-file-alt", label: "My Submissions", href: demoUrl("sciverify/author/submissions.html") },
   ];
@@ -95,12 +103,21 @@
     { key: "dashboard", icon: "fa-th-large", label: "Dashboard", href: demoUrl("sciverify/reviewer/dashboard.html") },
   ];
 
+  const sciverifySupervisorNav = [
+    { key: "dashboard", icon: "fa-th-large", label: "Dashboard", href: demoUrl("sciverify/supervisor/dashboard.html") },
+    { key: "check", icon: "fa-flask", label: "Check Manuscript", href: demoUrl("sciverify/supervisor/new-check.html") },
+  ];
+
   function navFor(app, role) {
     if (app === "portal") return portalNav;
-    if (app === "scitrace") return scitraceAuthorNav;
+    if (app === "scitrace") {
+      if (role === "supervisor") return scitraceSupervisorNav;
+      return scitraceAuthorNav;
+    }
     if (app === "sciverify") {
       if (role === "editor") return sciverifyEditorNav;
       if (role === "reviewer") return sciverifyReviewerNav;
+      if (role === "supervisor") return sciverifySupervisorNav;
       return sciverifyAuthorNav;
     }
     return [];
@@ -142,7 +159,7 @@
     });
 
     // Cross-app shortcuts (matches portal/templates/base.html structure)
-    const showSciTraceLink = role === "author";
+    const showSciTraceLink = role === "author" || role === "supervisor";
     const crossLinks = `
       <hr class="my-3 sidebar-divider">
       <p class="text-uppercase fw-semibold mb-2 sidebar-section-label">Applications</p>
@@ -159,7 +176,7 @@
           </a>
         </li>` : ""}
         <li class="nav-item">
-          <a class="nav-link" href="${demoUrl(role === "editor" ? "sciverify/editor/dashboard.html" : role === "reviewer" ? "sciverify/reviewer/dashboard.html" : "sciverify/author/submissions.html")}">
+          <a class="nav-link" href="${demoUrl(role === "editor" ? "sciverify/editor/dashboard.html" : role === "reviewer" ? "sciverify/reviewer/dashboard.html" : role === "supervisor" ? "sciverify/supervisor/dashboard.html" : "sciverify/author/submissions.html")}">
             <i class="fas fa-check-circle"></i> SciVerify
           </a>
         </li>

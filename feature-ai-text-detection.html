@@ -39,8 +39,8 @@
             <img src="assets/img/sciverify-logo.png" alt="SciVerify" class="tool-logo tool-logo-72" style="margin-bottom:1rem;">
             <div class="role-eyebrow">SciVerify · feature</div>
             <h1>Fluent isn't the same as written by a person.</h1>
-            <p>SciVerify applies 15 heuristic indicators across every IMRaD section — from pasted chatbot prefixes and tortured phrasing to hallucinated citations and statistical cadence anomalies — and highlights the exact words that triggered each flag.</p>
-            <a href="demo/sciverify/editor/checktool-index.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
+            <p>SciVerify scans every IMRaD section with <strong>22 indicators across six buckets</strong> — pasted chatbot prefixes, tortured phrasing, hallucinated citations, cadence anomalies, plus a local GPT-2 perplexity and burstiness model — and highlights the exact words that triggered each flag.</p>
+            <a href="demo/sciverify/supervisor/result.html" class="btn-cta-primary mt-2"><i class="fas fa-play me-2"></i>See it in the demo</a>
         </div>
         <div class="role-hero-mock reveal delay-1">
             <div class="mock-lineage" style="width:100%;">
@@ -68,14 +68,17 @@
 <section class="section">
     <div class="container" style="max-width:900px;">
         <h2 class="reveal">What it is</h2>
-        <p class="section-lead reveal" style="text-align:left;max-width:none;">A transparent, heuristics-based screen — not a black-box classifier. Fifteen indicators are organized into severity tiers and applied per section, so a fluent discussion section that's drifting from the rest of the paper doesn't slip through. An optional local-LLM verdict adds a holistic second opinion.</p>
+        <p class="section-lead reveal" style="text-align:left;max-width:none;">A transparent, heuristics-plus-models screen — not a black-box classifier. Twenty-two indicators are organized into <strong>six buckets</strong> (model, lexical, cadence, semantic, citations, cross-section) and applied per section. A calibrated logistic-regression model turns the buckets into one AI probability, while a single chatbot leak or tortured phrase still forces the section into the fail band on its own.</p>
 
         <h2 class="reveal mt-5">What it can do</h2>
         <ul class="bullet-list reveal">
-            <li><strong>15 indicators, five tiers.</strong> From critical signals like chatbot leaks and tortured paraphrase to subtler ones like cadence, topical drift and internal inconsistency.</li>
-            <li><strong>Per-section scoring.</strong> Introduction, methods, results, discussion and conclusion are scored separately.</li>
-            <li><strong>Trigger words highlighted.</strong> Click a flag and see exactly what set it off.</li>
-            <li><strong>Banded verdicts.</strong> Sections fall into likely-AI, partial, or human bands.</li>
+            <li><strong>22 indicators, six buckets.</strong> Critical signals like chatbot leaks and tortured paraphrase sit beside statistical ones like sentence rhythm, discourse-marker openings, and low burstiness.</li>
+            <li><strong>Local model signals.</strong> A small GPT-2 model scores each sentence's perplexity and burstiness — machine text is uniformly predictable, human prose varies.</li>
+            <li><strong>ZipPy compression entropy.</strong> Text that compresses suspiciously well is another tell of machine generation.</li>
+            <li><strong>Calibrated verdicts.</strong> A trained logistic-regression model combines the buckets into one 0–100 AI probability per section.</li>
+            <li><strong>Cloud LLM second opinion.</strong> An optional detector cross-checks the heuristics and proposes concrete fixes per passage.</li>
+            <li><strong>Per-section scoring.</strong> Introduction, methods, results, discussion and conclusion are scored separately, with the trigger words highlighted.</li>
+            <li><strong>Banded verdicts.</strong> Sections fall into likely-AI, mixed, or likely-human bands; critical hits force ≥ 90.</li>
             <li><strong>Cached &amp; re-runnable.</strong> Results invalidate automatically when the main article is re-uploaded.</li>
         </ul>
 
